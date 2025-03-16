@@ -3,38 +3,38 @@
     "id": 1,
     "name": "Chill & Relaxed",
     "color": "#4fc3f7",
-    "emoji": "😌",
+    "emoji": "🌴",
     "description": "Calm and peaceful anime that bring a sense of relaxation.",
     "genres": [
-      { "genre_ids": [36], "name": "Slice of Life", "description": "Everyday life stories with a calming pace." },
-      { "genre_ids": [22, 74], "name": "Romance", "description": "Sweet love stories filled with warmth." },
-      { "genre_ids": [63], "name": "Iyashikei", "description": "Soothing, healing anime that bring comfort." }
+      { "id": 1, "name": "Slice of Life", "description": "Everyday life stories with a calming pace.", "jikan_genre_ids": [36] },
+      { "id": 2, "name": "Romance", "description": "Sweet love stories filled with warmth.", "jikan_genre_ids": [22, 74] },
+      { "id": 3, "name": "Iyashikei", "description": "Soothing, healing anime that bring comfort.", "jikan_genre_ids": [63] }
     ]
   },
   {
     "id": 2,
     "name": "Excited & Energetic",
     "color": "#ff7043",
-    "emoji": "🔥",
+    "emoji": "⚡",
     "description": "High-energy anime with intense action, sports, and thrilling adventures.",
     "genres": [
-      { "genre_ids": [1], "name": "Action", "description": "Fast-paced battles and high-adrenaline fights." },
-      { "genre_ids": [30], "name": "Sports", "description": "Competitive athletics with intense rivalries." },
-      { "genre_ids": [2], "name": "Adventure", "description": "Thrilling journeys through unknown lands." },
-      { "genre_ids": [18], "name": "Mecha", "description": "Giant robots and high-intensity futuristic battles." }
+      { "id": 4, "name": "Action", "description": "Fast-paced battles and high-adrenaline fights.", "jikan_genre_ids": [1] },
+      { "id": 5, "name": "Sports", "description": "Competitive athletics with intense rivalries.", "jikan_genre_ids": [30] },
+      { "id": 6, "name": "Adventure", "description": "Thrilling journeys through unknown lands.", "jikan_genre_ids": [2] },
+      { "id": 7, "name": "Mecha", "description": "Giant robots and high-intensity futuristic battles.", "jikan_genre_ids": [18] }
     ]
   },
   {
     "id": 3,
     "name": "Curious & Mysterious",
     "color": "#9c27b0",
-    "emoji": "🔮",
+    "emoji": "🔍",
     "description": "Mind-bending and mysterious anime filled with intrigue and suspense.",
     "genres": [
-      { "genre_ids": [7], "name": "Mystery", "description": "Unravel puzzles, secrets, and mind-bending cases." },
-      { "genre_ids": [24, 29], "name": "Sci-Fi", "description": "Futuristic settings and advanced technology." },
-      { "genre_ids": [40], "name": "Psychological", "description": "Intense mind games and deep thought-provoking themes." },
-      { "genre_ids": [39], "name": "Crime", "description": "Detective investigations, criminal plots, and crime-solving." }
+      { "id": 8, "name": "Mystery", "description": "Unravel puzzles, secrets, and mind-bending cases.", "jikan_genre_ids": [7] },
+      { "id": 9, "name": "Sci-Fi", "description": "Futuristic settings and advanced technology.", "jikan_genre_ids": [24, 29] },
+      { "id": 10, "name": "Psychological", "description": "Intense mind games and deep thought-provoking themes.", "jikan_genre_ids": [40] },
+      { "id": 11, "name": "Crime", "description": "Detective investigations, criminal plots, and crime-solving.", "jikan_genre_ids": [39] }
     ]
   },
   {
@@ -44,10 +44,9 @@
     "emoji": "😱",
     "description": "Psychological, horror, and thriller anime that keep you on edge.",
     "genres": [
-      { "genre_ids": [41], "name": "Thriller", "description": "High-stakes action and edge-of-your-seat tension." },
-      { "genre_ids": [40], "name": "Psychological", "description": "Mind games, paranoia, and intricate schemes." },
-      { "genre_ids": [14], "name": "Horror", "description": "Designed to shock, scare, and unsettle the audience." },
-      { "genre_ids": [39], "name": "Crime", "description": "Dark and thrilling crime stories with high-stakes drama." }
+      { "id": 12, "name": "Thriller", "description": "High-stakes action and edge-of-your-seat tension.", "jikan_genre_ids": [41] },
+      { "id": 13, "name": "Psychological", "description": "Mind games, paranoia, and intricate schemes.", "jikan_genre_ids": [40] },
+      { "id": 14, "name": "Horror", "description": "Designed to shock, scare, and unsettle the audience.", "jikan_genre_ids": [14] }
     ]
   },
   {
@@ -57,21 +56,21 @@
     "emoji": "💔",
     "description": "Touching stories that evoke deep emotions and meaningful narratives.",
     "genres": [
-      { "genre_ids": [8], "name": "Drama", "description": "Emotionally-driven character stories with depth." },
-      { "genre_ids": [45], "name": "Tragedy", "description": "Heart-wrenching tales of sorrow and sacrifice." },
-      { "genre_ids": [78], "name": "Coming of Age", "description": "Growth, self-discovery, and personal evolution." }
+      { "id": 15, "name": "Drama", "description": "Emotionally-driven character stories with depth.", "jikan_genre_ids": [8] },
+      { "id": 16, "name": "Tragedy", "description": "Heart-wrenching tales of sorrow and sacrifice.", "jikan_genre_ids": [45] },
+      { "id": 17, "name": "Coming of Age", "description": "Growth, self-discovery, and personal evolution.", "jikan_genre_ids": [78] }
     ]
   },
   {
     "id": 6,
     "name": "Playful & Funny",
     "color": "#ffca28",
-    "emoji": "😆",
+    "emoji": "😂",
     "description": "Lighthearted and hilarious anime that bring pure joy and laughter.",
     "genres": [
-      { "genre_ids": [4], "name": "Comedy", "description": "Laugh-out-loud moments and humor-filled narratives." },
-      { "genre_ids": [20], "name": "Parody", "description": "Satirical anime that poke fun at popular tropes." },
-      { "genre_ids": [57], "name": "Slapstick", "description": "Exaggerated physical humor and wild antics." }
+      { "id": 18, "name": "Comedy", "description": "Laugh-out-loud moments and humor-filled narratives.", "jikan_genre_ids": [4] },
+      { "id": 19, "name": "Parody", "description": "Satirical anime that poke fun at popular tropes.", "jikan_genre_ids": [20] },
+      { "id": 20, "name": "Slapstick", "description": "Exaggerated physical humor and wild antics.", "jikan_genre_ids": [57] }
     ]
   },
   {
@@ -81,22 +80,21 @@
     "emoji": "✨",
     "description": "Anime that inspire personal growth, heroism, and self-discovery.",
     "genres": [
-      { "genre_ids": [50], "name": "Inspirational", "description": "Motivating stories that leave you inspired." },
-      { "genre_ids": [31], "name": "Superhero", "description": "Heroic tales of courage and justice." },
-      { "genre_ids": [2], "name": "Adventure", "description": "Epic journeys of self-discovery and purpose." }
+      { "id": 21, "name": "Inspirational", "description": "Motivating stories that leave you inspired.", "jikan_genre_ids": [50] },
+      { "id": 22, "name": "Superhero", "description": "Heroic tales of courage and justice.", "jikan_genre_ids": [31] }
     ]
   },
   {
     "id": 8,
     "name": "Magical & Enchanting",
     "color": "#7e57c2",
-    "emoji": "🧙‍♂️",
+    "emoji": "🔮",
     "description": "Fantasy-filled adventures with magic, mythology, and wonder.",
     "genres": [
-      { "genre_ids": [10], "name": "Fantasy", "description": "Magical adventures in enchanting worlds." },
-      { "genre_ids": [66], "name": "Mahou Shoujo", "description": "Magical girls fighting for justice." },
-      { "genre_ids": [67], "name": "Mythology", "description": "Ancient legends and divine powers." },
-      { "genre_ids": [62], "name": "Isekai", "description": "Characters transported to alternate worlds or reincarnated." }
+      { "id": 23, "name": "Fantasy", "description": "Magical adventures in enchanting worlds.", "jikan_genre_ids": [10] },
+      { "id": 24, "name": "Mahou Shoujo", "description": "Magical girls fighting for justice.", "jikan_genre_ids": [66] },
+      { "id": 25, "name": "Mythology", "description": "Ancient legends and divine powers.", "jikan_genre_ids": [67] },
+      { "id": 26, "name": "Isekai", "description": "Characters transported to alternate worlds or reincarnated.", "jikan_genre_ids": [62] }
     ]
   },
   {
@@ -106,9 +104,8 @@
     "emoji": "👻",
     "description": "Anime featuring ghosts, demons, and other supernatural beings.",
     "genres": [
-      { "genre_ids": [37], "name": "Supernatural", "description": "Ghosts, spirits, and unexplained mysteries." },
-      { "genre_ids": [6], "name": "Demons", "description": "Dark forces and powerful demonic beings." },
-      { "genre_ids": [32], "name": "Vampires", "description": "Bloodsucking immortals lurking in the shadows." }
+      { "id": 27, "name": "Supernatural", "description": "Ghosts, spirits, and unexplained mysteries.", "jikan_genre_ids": [37] },
+      { "id": 28, "name": "Demons", "description": "Dark forces and powerful demonic beings.", "jikan_genre_ids": [6] }
     ]
   },
   {
@@ -118,9 +115,9 @@
     "emoji": "😭",
     "description": "Tragic and emotional anime that will leave you in tears.",
     "genres": [
-      { "genre_ids": [8], "name": "Drama", "description": "Tearjerking emotional stories." },
-      { "genre_ids": [45], "name": "Tragedy", "description": "Heartbreaking narratives of loss and despair." },
-      { "genre_ids": [22, 74], "name": "Romance", "description": "Romantic stories with bittersweet endings." }
+      { "id": 29, "name": "Drama", "description": "Tearjerking emotional stories.", "jikan_genre_ids": [8] },
+      { "id": 30, "name": "Tragedy", "description": "Heartbreaking narratives of loss and despair.", "jikan_genre_ids": [45] },
+      { "id": 31, "name": "Romance", "description": "Romantic stories with bittersweet endings.", "jikan_genre_ids": [22, 74] }
     ]
   }
 ]

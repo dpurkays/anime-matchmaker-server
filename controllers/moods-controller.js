@@ -26,8 +26,8 @@ const getAllGenresByMood = (req, res) => {
     try {
         const { id } = req.params;
         const moods = readFile();
-        const mood = moods.find(m => m.id === parseInt(id));
 
+        const mood = moods.find(m => m.id === parseInt(id));
         if(!mood) {
             return res.status(404).json({error: "Mood not found"});
         }
@@ -38,5 +38,27 @@ const getAllGenresByMood = (req, res) => {
     }
 }
 
-export { getAllGenresByMood, getAllMoods };
+const getOneGenre = (req, res) => {
+    try {
+        const { id, genreId } = req.params;
+        const moods = readFile();
+
+        const mood = moods.find(m => m.id === parseInt(id));
+        if(!mood) {
+            return res.status(404).json({error: "Mood not found"});
+        }
+
+        const genre = mood.genres.find(g => g.id === parseInt(genreId));
+        if(!genre) {
+           return res.status(404).json({error: "Genre not found"});
+        }
+
+        res.status(200).json(genre);
+
+    } catch(error){
+        res.status(500).json({error: "Error retrieving genres by mood"});
+    }
+}
+
+export { getAllGenresByMood, getAllMoods, getOneGenre };
 
