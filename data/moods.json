@@ -1,0 +1,126 @@
+[
+  {
+    "id": 1,
+    "name": "Chill & Relaxed",
+    "color": "#4fc3f7",
+    "emoji": "😌",
+    "description": "Calm and peaceful anime that bring a sense of relaxation.",
+    "genres": [
+      { "genre_ids": [36], "name": "Slice of Life", "description": "Everyday life stories with a calming pace." },
+      { "genre_ids": [22, 74], "name": "Romance", "description": "Sweet love stories filled with warmth." },
+      { "genre_ids": [63], "name": "Iyashikei", "description": "Soothing, healing anime that bring comfort." }
+    ]
+  },
+  {
+    "id": 2,
+    "name": "Excited & Energetic",
+    "color": "#ff7043",
+    "emoji": "🔥",
+    "description": "High-energy anime with intense action, sports, and thrilling adventures.",
+    "genres": [
+      { "genre_ids": [1], "name": "Action", "description": "Fast-paced battles and high-adrenaline fights." },
+      { "genre_ids": [30], "name": "Sports", "description": "Competitive athletics with intense rivalries." },
+      { "genre_ids": [2], "name": "Adventure", "description": "Thrilling journeys through unknown lands." },
+      { "genre_ids": [18], "name": "Mecha", "description": "Giant robots and high-intensity futuristic battles." }
+    ]
+  },
+  {
+    "id": 3,
+    "name": "Curious & Mysterious",
+    "color": "#9c27b0",
+    "emoji": "🔮",
+    "description": "Mind-bending and mysterious anime filled with intrigue and suspense.",
+    "genres": [
+      { "genre_ids": [7], "name": "Mystery", "description": "Unravel puzzles, secrets, and mind-bending cases." },
+      { "genre_ids": [24, 29], "name": "Sci-Fi", "description": "Futuristic settings and advanced technology." },
+      { "genre_ids": [40], "name": "Psychological", "description": "Intense mind games and deep thought-provoking themes." },
+      { "genre_ids": [39], "name": "Crime", "description": "Detective investigations, criminal plots, and crime-solving." }
+    ]
+  },
+  {
+    "id": 4,
+    "name": "Suspenseful & Intense",
+    "color": "#f57c00",
+    "emoji": "😱",
+    "description": "Psychological, horror, and thriller anime that keep you on edge.",
+    "genres": [
+      { "genre_ids": [41], "name": "Thriller", "description": "High-stakes action and edge-of-your-seat tension." },
+      { "genre_ids": [40], "name": "Psychological", "description": "Mind games, paranoia, and intricate schemes." },
+      { "genre_ids": [14], "name": "Horror", "description": "Designed to shock, scare, and unsettle the audience." },
+      { "genre_ids": [39], "name": "Crime", "description": "Dark and thrilling crime stories with high-stakes drama." }
+    ]
+  },
+  {
+    "id": 5,
+    "name": "Emotional & Deep",
+    "color": "#f06292",
+    "emoji": "💔",
+    "description": "Touching stories that evoke deep emotions and meaningful narratives.",
+    "genres": [
+      { "genre_ids": [8], "name": "Drama", "description": "Emotionally-driven character stories with depth." },
+      { "genre_ids": [45], "name": "Tragedy", "description": "Heart-wrenching tales of sorrow and sacrifice." },
+      { "genre_ids": [78], "name": "Coming of Age", "description": "Growth, self-discovery, and personal evolution." }
+    ]
+  },
+  {
+    "id": 6,
+    "name": "Playful & Funny",
+    "color": "#ffca28",
+    "emoji": "😆",
+    "description": "Lighthearted and hilarious anime that bring pure joy and laughter.",
+    "genres": [
+      { "genre_ids": [4], "name": "Comedy", "description": "Laugh-out-loud moments and humor-filled narratives." },
+      { "genre_ids": [20], "name": "Parody", "description": "Satirical anime that poke fun at popular tropes." },
+      { "genre_ids": [57], "name": "Slapstick", "description": "Exaggerated physical humor and wild antics." }
+    ]
+  },
+  {
+    "id": 7,
+    "name": "Inspired & Uplifting",
+    "color": "#66bb6a",
+    "emoji": "✨",
+    "description": "Anime that inspire personal growth, heroism, and self-discovery.",
+    "genres": [
+      { "genre_ids": [50], "name": "Inspirational", "description": "Motivating stories that leave you inspired." },
+      { "genre_ids": [31], "name": "Superhero", "description": "Heroic tales of courage and justice." },
+      { "genre_ids": [2], "name": "Adventure", "description": "Epic journeys of self-discovery and purpose." }
+    ]
+  },
+  {
+    "id": 8,
+    "name": "Magical & Enchanting",
+    "color": "#7e57c2",
+    "emoji": "🧙‍♂️",
+    "description": "Fantasy-filled adventures with magic, mythology, and wonder.",
+    "genres": [
+      { "genre_ids": [10], "name": "Fantasy", "description": "Magical adventures in enchanting worlds." },
+      { "genre_ids": [66], "name": "Mahou Shoujo", "description": "Magical girls fighting for justice." },
+      { "genre_ids": [67], "name": "Mythology", "description": "Ancient legends and divine powers." },
+      { "genre_ids": [62], "name": "Isekai", "description": "Characters transported to alternate worlds or reincarnated." }
+    ]
+  },
+  {
+    "id": 9,
+    "name": "Spooky & Supernatural",
+    "color": "#673ab7",
+    "emoji": "👻",
+    "description": "Anime featuring ghosts, demons, and other supernatural beings.",
+    "genres": [
+      { "genre_ids": [37], "name": "Supernatural", "description": "Ghosts, spirits, and unexplained mysteries." },
+      { "genre_ids": [6], "name": "Demons", "description": "Dark forces and powerful demonic beings." },
+      { "genre_ids": [32], "name": "Vampires", "description": "Bloodsucking immortals lurking in the shadows." }
+    ]
+  },
+  {
+    "id": 10,
+    "name": "Sad & Heartbreaking",
+    "color": "#3949ab",
+    "emoji": "😭",
+    "description": "Tragic and emotional anime that will leave you in tears.",
+    "genres": [
+      { "genre_ids": [8], "name": "Drama", "description": "Tearjerking emotional stories." },
+      { "genre_ids": [45], "name": "Tragedy", "description": "Heartbreaking narratives of loss and despair." },
+      { "genre_ids": [22, 74], "name": "Romance", "description": "Romantic stories with bittersweet endings." }
+    ]
+  }
+]
