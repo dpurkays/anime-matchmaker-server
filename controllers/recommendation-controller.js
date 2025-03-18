@@ -5,7 +5,7 @@ const model = genAI.getGenerativeModel({model: "gemini-2.0-flash"});
 
 const getAnimeByTVShow = async(req, res) => {
     try {
-        const {tvShow} = req.body;
+        const tvShow = req.query.tvShow;
         console.log(tvShow);
 
         if (!tvShow) {
@@ -77,7 +77,8 @@ const getAnimeByTVShow = async(req, res) => {
         const parsedData = responseText.replace(/```json/g, "").replace(/```/g, "").trim();
         if (!parsedData) throw new Error("Failed to extract JSON");
         console.log(parsedData);
-        // res.status(200).json(jsonResponse);
+        //  call jikan api here and parse to send to frontend
+        res.status(200).json(parsedData);
     } catch(error) {
         console.error(error);
         res.status(500).json({error: "Failed to fetch anime recommendations"});

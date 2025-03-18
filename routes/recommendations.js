@@ -3,7 +3,6 @@ import * as recommendationController from "../controllers/recommendation-control
 
 const router = express.Router();
 
-router.route("/tv")
-    .post(recommendationController.getAnimeByTVShow);
+router.route("/tv").get(recommendationController.getAnimeByTVShow);
 
 export default router;
