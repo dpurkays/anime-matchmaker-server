@@ -1,5 +1,6 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import "dotenv/config";
+import { parseAIresponse } from "../utils/geminiUtils.js";
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 const model = genAI.getGenerativeModel({model: "gemini-2.0-flash"});
 
@@ -72,10 +73,11 @@ const getAnimeByTVShow = async(req, res) => {
         `;
 
         const result = await model.generateContent(prompt);
-        const responseText = result.response.text();
-        // console.log(responseText)
-        const parsedData = responseText.replace(/```json/g, "").replace(/```/g, "").trim();
-        if (!parsedData) throw new Error("Failed to extract JSON");
+        // const responseText = result.response.text();
+        // // console.log(responseText)
+        // const parsedData = responseText.replace(/```json/g, "").replace(/```/g, "").trim();
+        // if (!parsedData) throw new Error("Failed to extract JSON");
+        const parsedData = parseAIresponse(result);
         console.log(parsedData);
         //  call jikan api here and parse to send to frontend
         res.status(200).json(parsedData);
