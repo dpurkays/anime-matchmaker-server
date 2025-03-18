@@ -1,5 +1,7 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import axios from "axios";
 import "dotenv/config";
+import { formatRating } from "../utils/animeUtils.js";
 import { parseAIresponse } from "../utils/geminiUtils.js";
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 const model = genAI.getGenerativeModel({model: "gemini-2.0-flash"});
@@ -73,17 +75,44 @@ const getAnimeByTVShow = async(req, res) => {
         `;
 
         const result = await model.generateContent(prompt);
-        // const responseText = result.response.text();
-        // // console.log(responseText)
-        // const parsedData = responseText.replace(/```json/g, "").replace(/```/g, "").trim();
-        // if (!parsedData) throw new Error("Failed to extract JSON");
         const parsedData = parseAIresponse(result);
-        console.log(parsedData);
+        // console.log(parsedData);
         //  call jikan api here and parse to send to frontend
+        console.log(parsedData.recommendations[0].title)
+        fetchAnimeFromJikanByName(parsedData.recommendations[0].title);
+
+
         res.status(200).json(parsedData);
     } catch(error) {
         console.error(error);
         res.status(500).json({error: "Failed to fetch anime recommendations"});
+    }
+}
+
+const fetchAnimeFromJikanByName = async (title) => {
+    try{
+        const jikanUrl = "https://api.jikan.moe/v4/anime";
+        const animeResponse = await axios.get(`${jikanUrl}/?q=${title}`);
+        if(animeResponse.data.length === 0) {
+            console.error(`no results foudn for :${title}`);
+            return null;
+        }
+
+        const anime = animeResponse.data.data[0];
+        const extractedAnime = {
+            mal_id: anime.mal_id,
+            image: anime.images.jpg.image_url,
+            rating: formatRating(anime.rating),
+            title_english: anime.title_english,
+            year: anime.year
+        }
+        console.log(extractedAnime);
+
+
+
+    } catch(error) {
+        console.error(error);
+        return null;
     }
 }
 
