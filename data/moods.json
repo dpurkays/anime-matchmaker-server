@@ -116,7 +116,6 @@
     "description": "Tragic and emotional anime that will leave you in tears.",
     "genres": [
       { "id": 29, "name": "Drama", "description": "Tearjerking emotional stories.", "jikan_genre_ids": [8] },
-      { "id": 30, "name": "Tragedy", "description": "Heartbreaking narratives of loss and despair.", "jikan_genre_ids": [45] },
       { "id": 31, "name": "Romance", "description": "Romantic stories with bittersweet endings.", "jikan_genre_ids": [22, 74] }
     ]
   }

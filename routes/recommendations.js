@@ -1,0 +1,8 @@
+import express from "express";
+import * as recommendationController from "../controllers/recommendation-controller.js";
+
+const router = express.Router();
+
+router.get("/tv", recommendationController.getAnimeByTVShow);
+
+export default router;

@@ -9,7 +9,7 @@ const readFile = () => {
 
 const getAllMoods = (req, res) => {
     try {
-        const moods = readFile().map(({id, name, color, emoji, description})  => ({
+        const moods = readFile().map(({id, name, color, emoji, description, genres})  => ({
             id,
             name,
             color,
