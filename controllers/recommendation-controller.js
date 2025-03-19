@@ -8,7 +8,7 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 const model = genAI.getGenerativeModel({model: "gemini-2.0-flash"});
 
 const limiter = new Bottleneck({
-    minTime: 2000, 
+    minTime: 1850, 
     maxConcurrent: 3, 
 });
 
@@ -21,7 +21,19 @@ const getAnimeByTVShow = async(req, res) => {
             return res.status(400).json({ error: "TV show name is required" });
         }
 
-        const prompt =  `
+        const parsedData = await fetchAnimeRecommendationsFromGemini(tvShow);
+        const animeRecommendations = await fetchAllAnimes(parsedData.recommendations); 
+
+        res.status(200).json(animeRecommendations);
+    } catch(error) {
+        console.error(error);
+        res.status(500).json({error: "Failed to fetch anime recommendations"});
+    }
+}
+
+const fetchAnimeRecommendationsFromGemini = async (tvShow) => {
+    try{
+         const prompt =  `
             I have a TV show or movie titled "${tvShow}" and I need **anime that closely match its themes, worldbuilding, and character dynamics.**  
 
             ### **Step 1: Analyze the Input**  
@@ -81,14 +93,10 @@ const getAnimeByTVShow = async(req, res) => {
         `;
 
         const result = await model.generateContent(prompt);
-        const parsedData = parseAIresponse(result);
-        // console.log(parsedData);
-        //  call jikan api here and parse to send to frontend   
-        const animeRecommendations = await fetchAllAnimes(parsedData.recommendations);    
-        res.status(200).json(animeRecommendations);
+        return parseAIresponse(result);
     } catch(error) {
-        console.error(error);
-        res.status(500).json({error: "Failed to fetch anime recommendations"});
+        console.error("Error fetching recommendations from Gemini API: ", error);
+        return { recommendations: []};
     }
 }
 
