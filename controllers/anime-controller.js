@@ -2,7 +2,6 @@ import axios from "axios";
 import "dotenv/config";
 import { formatAiringStatus, formatDuration, formatRating, jikanUrl } from "../utils/animeUtils.js";
 
-
 const getAnime = async (req, res) => {
     try {
         const {animeId} = req.params;

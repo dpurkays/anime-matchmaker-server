@@ -2,15 +2,22 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 import axios from "axios";
 import Bottleneck from "bottleneck";
 import "dotenv/config";
+import NodeCache from "node-cache";
 import { formatRating } from "../utils/animeUtils.js";
 import { parseAIresponse } from "../utils/geminiUtils.js";
+
+const cache = new NodeCache({ stdTTL: 60 * 5}); //cached for 5mins
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
 const limiter = new Bottleneck({
-  minTime: 1850,
-  maxConcurrent: 3,
+  minTime: 1350, 
+  maxConcurrent: 3, // Allows 3 parallel requests (Jikan API allows 3/sec)
+  reservoir: 60, // Allows 60 requests per minute
+  reservoirRefreshInterval: 60 * 1000, // Refreshes every 60 seconds
+  reservoirRefreshAmount: 60, // Restores 60 requests per minute
 });
+
 
 const getAnimeByMood = async (req, res) => {
   try {
@@ -30,7 +37,7 @@ const getAnimeByMood = async (req, res) => {
         image: anime.images.jpg.image_url,
         rating: formatRating(anime.rating),
         title_english: anime.title_english || anime.title,
-        year: anime.year || "",
+        year: anime.year || " ",
     }));
 
     res.status(200).json(extractedAnime);
@@ -50,10 +57,22 @@ const getAnimeByTVShow = async (req, res) => {
       return res.status(400).json({ error: "TV show name is required" });
     }
 
+    const cachedData = cache.get(tvShow);
+    if (cachedData) {
+      console.log("Serving from cache:", tvShow);
+      return res.status(200).json(cachedData);
+    }
+
+    console.log("🔍 Fetching recommendations from Gemini...");
+
     const parsedData = await fetchAnimeRecommendationsFromGemini(tvShow);
     const animeRecommendations = await fetchAllAnimes(
       parsedData.recommendations
     );
+
+    if(animeRecommendations.length > 0) {
+        cache.set(tvShow, animeRecommendations);
+    }
 
     res.status(200).json(animeRecommendations);
   } catch (error) {
@@ -133,16 +152,38 @@ const fetchAnimeRecommendationsFromGemini = async (tvShow) => {
 
 const fetchAllAnimes = async (geminiRecommendations) => {
   try {
-    const response = await Promise.allSettled(
-      geminiRecommendations.map(async (anime) => {
+
+    const animeTitles = geminiRecommendations.map((anime) => anime.title);
+    const cachedResults = [];
+    const toFetch = [];
+
+    animeTitles.forEach((title) => {
+      const cachedAnime = cache.get(title);
+      console.log("nice, this anime was cached!",title);
+      if(cachedAnime !== undefined) {
+        cachedResults.push({ ...cachedAnime, similarity_reason: geminiRecommendations.find(a => a.title === title)?.similarity_reason });
+      } else {
+        toFetch.push(title);
+      }
+    })
+
+    if (toFetch.length === 0) {
+      console.log("All results served from cache!");
+      return cachedResults;
+    }
+
+    console.log("🔍 Fetching remaining anime from Jikan:", toFetch);
+    const fetchedAnimes = await Promise.allSettled(
+      toFetch.map(async (title) => {
         try {
-          const animeData = await fetchAnimeFromJikanByName(anime.title);
-          return animeData
-            ? { ...animeData, similarity_reasons: anime.similarity_reasons }
-            : null;
+          const animeData = await fetchAnimeFromJikanByName(title);
+          if(animeData) {
+            cache.set(title, animeData);
+            return { ...animeData, similarity_reason: geminiRecommendations.find(a => a.title === title)?.similarity_reason }
+          } else return null;
         } catch (error) {
           console.error(
-            `Error fetching anime with title: ${anime.title}`,
+            `Error fetching anime with title: ${title}`,
             error
           );
           return null;
@@ -150,21 +191,37 @@ const fetchAllAnimes = async (geminiRecommendations) => {
       })
     );
     //because results returns a promise
-    const successfulResponses = response
-      .filter(
-        (response) => response.status === "fulfilled" && response.value !== null
-      )
-      .map((response) => response.value);
+    // const successfulResponses = response
+    //   .filter(
+    //     (response) => response.status === "fulfilled" && response.value !== null
+    //   )
+    //   .map((response) => response.value);
+
+    const successfulResponses = [ 
+      ...cachedResults, 
+      ...fetchedAnimes
+      .filter((response) => response.status === "fulfilled" && response.value !==null)
+      .map((response) => response.value)
+    ];
 
     return successfulResponses;
   } catch (error) {
     console.error(error);
+    return [];
   }
 };
 
-const fetchAnimeFromJikanByName = async (title) => {
+const fetchAnimeFromJikanByName = async (title, retryCount = 0) => {
   try {
+    console.time(`⏳ Fetching: ${title}`); // Start timer
     const jikanUrl = "https://api.jikan.moe/v4/anime";
+
+    const cachedAnime = cache.get(title);
+    if (cachedAnime !== undefined) {
+      console.timeEnd(`⏳ Fetching: ${title}`); // End timer (instant for cached)
+      console.log(`Served cached data for: ${title}`);
+      return cachedAnime;
+    }
 
     const animeResponse = await limiter.schedule(() =>
       axios.get(`${jikanUrl}/?q=${title}`)
@@ -172,6 +229,7 @@ const fetchAnimeFromJikanByName = async (title) => {
 
     if (!animeResponse.data.data || animeResponse.data.data.length === 0) {
       console.error(`No results found for: ${title}`);
+      cache.set(title, null);
       return null;
     }
 
@@ -181,17 +239,28 @@ const fetchAnimeFromJikanByName = async (title) => {
       image: anime.images.jpg.image_url,
       rating: formatRating(anime.rating),
       title_english: anime.title_english || anime.title,
-      year: anime.year || "",
+      year: anime.year || " ",
     };
-
+    cache.set(title, extractedAnime);
+    console.log(`got ${title}`);
     return extractedAnime;
   } catch (error) {
+     console.timeEnd(`⏳ Fetching: ${title}`);
     if (error.response && error.response.status === 429) {
-      console.error(`Rate limit exceeded for: ${title}`);
+      console.error(`Rate limit exceeded for: ${title}. Retrying in 2s...`);
+      if(retryCount < 3) {
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+        return fetchAnimeFromJikanByName(title, retryCount + 1);
+      } else {
+        console.error(`Failed after 3 retries: ${title}`);
+        cache.set(title, null);
+        return null
+      }
     } else {
       console.error(`Error fetching anime: ${title}`, error.message);
+      cache.set(title, null);
+      return null;
     }
-    return null;
   }
 };
 
