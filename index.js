@@ -1,6 +1,7 @@
 import cors from "cors";
 import "dotenv/config";
 import express from "express";
+import animeRoutes from "./routes/anime.js";
 import moodsRoutes from "./routes/moods.js";
 import recommendationsRoutes from "./routes/recommendations.js";
 
@@ -12,6 +13,7 @@ app.use(cors());
 
 app.use("/api/moods", moodsRoutes);
 app.use("/api/recommendations", recommendationsRoutes);
+app.use("/api/anime", animeRoutes);
 
 app.listen(PORT, () => {
     console.log(`Server started and listening to PORT: ${PORT}`)
