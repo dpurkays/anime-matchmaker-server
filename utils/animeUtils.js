@@ -13,6 +13,6 @@ const formatDuration = (duration) => {
     return duration.split(" ").splice(0,2).join(" ");
 }
 
- const jikanUrl = "https://api.jikan.moe/v4/anime";
+const JIKAN_URL = "https://api.jikan.moe/v4/";
 
-export { formatAiringStatus, formatDuration, formatRating, jikanUrl };
+export { formatAiringStatus, formatDuration, formatRating, JIKAN_URL };

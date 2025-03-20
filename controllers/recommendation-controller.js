@@ -3,12 +3,13 @@ import axios from "axios";
 import Bottleneck from "bottleneck";
 import "dotenv/config";
 import NodeCache from "node-cache";
-import { formatRating } from "../utils/animeUtils.js";
-import { parseAIresponse } from "../utils/geminiUtils.js";
+import { formatRating, JIKAN_URL } from "../utils/animeUtils.js";
+import { getGeminiPrompt, parseAIresponse } from "../utils/geminiUtils.js";
 
 const cache = new NodeCache({ stdTTL: 60 * 5}); //cached for 5mins
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+const jikanUrl = JIKAN_URL;
 
 const limiter = new Bottleneck({
   minTime: 1350, 
@@ -18,14 +19,71 @@ const limiter = new Bottleneck({
   reservoirRefreshAmount: 60, // Restores 60 requests per minute
 });
 
+const getAnimeRecsByMALUser = async (req, res) => {
+  try{
+    const malUsername = req.query.malUsername;
+
+    const cachedData = cache.get(malUsername);
+    if (cachedData) {
+      console.log("Serving from cache:", malUsername);
+      return res.status(200).json(cachedData);
+    }
+
+    const malAnimeList = await fetchMALanimeList(malUsername);
+    if (malAnimeList.length === 0) {
+      return res.status(404).json({ error: "No anime found in user favorites or watch history." });
+    }
+
+    const animeListString = malAnimeList.join(", ");
+    const geminiRecommendations = await fetchAnimeRecommendationsFromGemini("mal", animeListString);
+    const animeRecommendations = await fetchAllAnimes(geminiRecommendations.recommendations);
+
+    if(animeRecommendations.length > 0) {
+        cache.set(malUsername, animeRecommendations);
+    }
+    res.status(200).json(animeRecommendations);
+  } catch(error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to fetch anime recommendations" });
+  }
+}
+
+const fetchMALanimeList = async (username) => {
+  try{
+    if (!username) {
+      return res.status(400).json({ error: "Mal username is required" });
+    }
+
+    let response = await axios.get(`${jikanUrl}users/${username}/favorites`);
+    let animeList = [];
+    if(response.data?.data?.length > 0) {
+      animeList = response.data.data.anime.map((anime) => anime.title).filter(Boolean);
+    }
+    if (animeList.length === 0) {
+      console.log("No favorites....looking at watch history");
+      response = await axios.get(`${jikanUrl}users/${username}/history?type=anime`);
+      animeList = response.data?.data
+        ?.map((anime) => anime.entry.name)
+        ?.filter(Boolean);
+    }
+
+    console.log(animeList)
+
+    return animeList;
+
+  } catch(error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to fetch MAL animes" });
+  }
+}
 
 const getAnimeByMood = async (req, res) => {
   try {
     const jikan_genre_ids = req.query.jikan_genre_ids?.split(",") || [];
-    const jikanUrl = "https://api.jikan.moe/v4/anime";
+    // const jikanUrl = "https://api.jikan.moe/v4/anime";
 
     const jikanResponse = await axios.get(
-      `${jikanUrl}?genres=${jikan_genre_ids.join(",")}&order_by=popularity`
+      `${jikanUrl}anime?genres=${jikan_genre_ids.join(",")}&order_by=popularity`
     );
 
     if (!jikanResponse.data.data || jikanResponse.data.data.length === 0) {
@@ -65,9 +123,9 @@ const getAnimeByTVShow = async (req, res) => {
 
     // console.log("🔍 Fetching recommendations from Gemini...");
 
-    const parsedData = await fetchAnimeRecommendationsFromGemini(tvShow);
+    const geminiRecommendations = await fetchAnimeRecommendationsFromGemini("tv", tvShow);
     const animeRecommendations = await fetchAllAnimes(
-      parsedData.recommendations
+      geminiRecommendations.recommendations
     );
 
     if(animeRecommendations.length > 0) {
@@ -81,66 +139,9 @@ const getAnimeByTVShow = async (req, res) => {
   }
 };
 
-const fetchAnimeRecommendationsFromGemini = async (tvShow) => {
+const fetchAnimeRecommendationsFromGemini = async (type, tvShow) => {
   try {
-    const prompt = `
-            I have a TV show or movie titled "${tvShow}" and I need **anime that closely match its themes, worldbuilding, and character dynamics.**  
-
-            ### **Step 1: Analyze the Input**  
-            First, identify the following aspects of "${tvShow}":  
-            - **Genre** (e.g., Cyberpunk, Sci-Fi, Psychological Thriller, Action)  
-            - **Setting** (e.g., Virtual Reality, AI-controlled dystopia, Futuristic Society)  
-            - **Core Themes** (e.g., Simulation vs. Reality, AI vs. Humans, Hacking, Martial Arts, Free Will)  
-            - **Mood & Atmosphere** (e.g., Dark, Futuristic, Philosophical, Action-packed)  
-
-            ### **Step 2: Find Matching Anime**  
-            - Select **10 anime that share at least 3 key aspects** with "${tvShow}".  
-            - **Each recommendation must include a reason** explaining why it was selected.  
-            - **Avoid unrelated genres** (e.g., high-fantasy, historical settings, romance-focused stories).  
-            - **Each recommendation must include ONLY two fields:**  
-                "title" → The anime name  
-                "similarity_reason" → A short reason why this anime was chosen  
-
-            ### ** DO NOT Include:**  
-            - Genre  
-            - Year of release  
-            - Studio names  
-            - Any information besides "title" and "similarity_reason"
-
-            **Output Format (JSON only, no extra text):**
-            Respond strictly in valid JSON format without any additional text. 
-            The JSON should be structured as follows:
-            \`\`\`json
-            {
-                "recommendations": [
-                    {
-                        "title": "Little Witch Academia",
-                        "similarity_reason": "Both feature young students learning magic in a fantasy school setting, with a lighthearted yet adventurous tone."
-                    },
-                    {
-                        "title": "Magi: The Labyrinth of Magic",
-                        "similarity_reason": "Shares a magical world, powerful artifacts, and a coming-of-age protagonist discovering their destiny."
-                    },
-                    {
-                        "title": "The Ancient Magus' Bride",
-                        "similarity_reason": "Both involve magic, a deep sense of wonder, and characters growing into their magical abilities."
-                    },
-                    {
-                        "title": "Black Clover",
-                        "similarity_reason": "Magic users train at an academy, with themes of rivalry, friendship, and overcoming challenges."
-                    },
-                    {
-                        "title": "Fate/Zero",
-                        "similarity_reason": "Dark fantasy with magic users engaging in intense battles, featuring deep lore and historical inspirations."
-                    }
-                ]
-                }
-            }
-            \`\`\`
-            **VERY IMPORTANT**:
-             - **Only return the JSON array** in the response.
-            - Do **NOT** include any introduction, explanation, or extra text.
-        `;
+    const prompt = getGeminiPrompt(type, tvShow);
 
     const result = await model.generateContent(prompt);
     return parseAIresponse(result);
@@ -208,7 +209,7 @@ const fetchAllAnimes = async (geminiRecommendations) => {
 const fetchAnimeFromJikanByName = async (title, retryCount = 0) => {
   try {
     // console.time(`⏳ Fetching: ${title}`); // Start timer
-    const jikanUrl = "https://api.jikan.moe/v4/anime";
+    // const jikanUrl = "https://api.jikan.moe/v4/anime";
 
     const cachedAnime = cache.get(title);
     if (cachedAnime !== undefined) {
@@ -218,7 +219,7 @@ const fetchAnimeFromJikanByName = async (title, retryCount = 0) => {
     }
 
     const animeResponse = await limiter.schedule(() =>
-      axios.get(`${jikanUrl}/?q=${title}`)
+      axios.get(`${jikanUrl}anime/?q=${title}`)
     );
 
     if (!animeResponse.data.data || animeResponse.data.data.length === 0) {
@@ -258,4 +259,5 @@ const fetchAnimeFromJikanByName = async (title, retryCount = 0) => {
   }
 };
 
-export { getAnimeByMood, getAnimeByTVShow };
+export { getAnimeByMood, getAnimeByTVShow, getAnimeRecsByMALUser };
+

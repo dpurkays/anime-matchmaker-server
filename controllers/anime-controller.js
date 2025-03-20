@@ -1,11 +1,12 @@
 import axios from "axios";
 import "dotenv/config";
-import { formatAiringStatus, formatDuration, formatRating, jikanUrl } from "../utils/animeUtils.js";
+import { formatAiringStatus, formatDuration, formatRating, JIKAN_URL } from "../utils/animeUtils.js";
 
+const jikanUrl = JIKAN_URL
 const getAnime = async (req, res) => {
     try {
         const {animeId} = req.params;
-        const jikanResponse = await axios.get(`${jikanUrl}/${animeId}/full`);
+        const jikanResponse = await axios.get(`${jikanUrl}anime/${animeId}/full`);
         if (!jikanResponse.data.data || jikanResponse.data.data.length === 0) {
             return res.status(404).json({ error: "No anime found for given genres" });
         }
