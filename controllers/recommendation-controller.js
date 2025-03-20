@@ -37,7 +37,7 @@ const getAnimeByMood = async (req, res) => {
         image: anime.images.jpg.image_url,
         rating: formatRating(anime.rating),
         title_english: anime.title_english || anime.title,
-        year: anime.year || " ",
+        year: anime.year || "",
     }));
 
     res.status(200).json(extractedAnime);
@@ -51,7 +51,7 @@ const getAnimeByMood = async (req, res) => {
 const getAnimeByTVShow = async (req, res) => {
   try {
     const tvShow = req.query.tvShow;
-    console.log(tvShow);
+    // console.log(tvShow);
 
     if (!tvShow) {
       return res.status(400).json({ error: "TV show name is required" });
@@ -59,11 +59,11 @@ const getAnimeByTVShow = async (req, res) => {
 
     const cachedData = cache.get(tvShow);
     if (cachedData) {
-      console.log("Serving from cache:", tvShow);
+      // console.log("Serving from cache:", tvShow);
       return res.status(200).json(cachedData);
     }
 
-    console.log("🔍 Fetching recommendations from Gemini...");
+    // console.log("🔍 Fetching recommendations from Gemini...");
 
     const parsedData = await fetchAnimeRecommendationsFromGemini(tvShow);
     const animeRecommendations = await fetchAllAnimes(
@@ -159,7 +159,7 @@ const fetchAllAnimes = async (geminiRecommendations) => {
 
     animeTitles.forEach((title) => {
       const cachedAnime = cache.get(title);
-      console.log("nice, this anime was cached!",title);
+      // console.log("nice, this anime was cached!",title);
       if(cachedAnime !== undefined) {
         cachedResults.push({ ...cachedAnime, similarity_reason: geminiRecommendations.find(a => a.title === title)?.similarity_reason });
       } else {
@@ -168,11 +168,11 @@ const fetchAllAnimes = async (geminiRecommendations) => {
     })
 
     if (toFetch.length === 0) {
-      console.log("All results served from cache!");
+      // console.log("All results served from cache!");
       return cachedResults;
     }
 
-    console.log("🔍 Fetching remaining anime from Jikan:", toFetch);
+    // console.log("🔍 Fetching remaining anime from Jikan:", toFetch);
     const fetchedAnimes = await Promise.allSettled(
       toFetch.map(async (title) => {
         try {
@@ -190,12 +190,6 @@ const fetchAllAnimes = async (geminiRecommendations) => {
         }
       })
     );
-    //because results returns a promise
-    // const successfulResponses = response
-    //   .filter(
-    //     (response) => response.status === "fulfilled" && response.value !== null
-    //   )
-    //   .map((response) => response.value);
 
     const successfulResponses = [ 
       ...cachedResults, 
@@ -213,13 +207,13 @@ const fetchAllAnimes = async (geminiRecommendations) => {
 
 const fetchAnimeFromJikanByName = async (title, retryCount = 0) => {
   try {
-    console.time(`⏳ Fetching: ${title}`); // Start timer
+    // console.time(`⏳ Fetching: ${title}`); // Start timer
     const jikanUrl = "https://api.jikan.moe/v4/anime";
 
     const cachedAnime = cache.get(title);
     if (cachedAnime !== undefined) {
-      console.timeEnd(`⏳ Fetching: ${title}`); // End timer (instant for cached)
-      console.log(`Served cached data for: ${title}`);
+      // console.timeEnd(`⏳ Fetching: ${title}`); // End timer (instant for cached)
+      // console.log(`Served cached data for: ${title}`);
       return cachedAnime;
     }
 
@@ -239,13 +233,13 @@ const fetchAnimeFromJikanByName = async (title, retryCount = 0) => {
       image: anime.images.jpg.image_url,
       rating: formatRating(anime.rating),
       title_english: anime.title_english || anime.title,
-      year: anime.year || " ",
+      year: anime.year ||  "",
     };
     cache.set(title, extractedAnime);
-    console.log(`got ${title}`);
+    // console.log(`got ${title}`);
     return extractedAnime;
   } catch (error) {
-     console.timeEnd(`⏳ Fetching: ${title}`);
+    //  console.timeEnd(`⏳ Fetching: ${title}`);
     if (error.response && error.response.status === 429) {
       console.error(`Rate limit exceeded for: ${title}. Retrying in 2s...`);
       if(retryCount < 3) {
