@@ -57,7 +57,6 @@
     "description": "Touching stories that evoke deep emotions and meaningful narratives.",
     "genres": [
       { "id": 15, "name": "Drama", "description": "Emotionally-driven character stories with depth.", "jikan_genre_ids": [8] },
-      { "id": 16, "name": "Tragedy", "description": "Heart-wrenching tales of sorrow and sacrifice.", "jikan_genre_ids": [45] },
       { "id": 17, "name": "Coming of Age", "description": "Growth, self-discovery, and personal evolution.", "jikan_genre_ids": [78] }
     ]
   },
