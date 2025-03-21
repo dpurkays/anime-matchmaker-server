@@ -201,7 +201,13 @@ const fetchAllAnimes = async (geminiRecommendations) => {
       const cachedAnime = cache.get(title);
       // console.log("nice, this anime was cached!",title);
       if(cachedAnime !== undefined) {
-        cachedResults.push({ ...cachedAnime, similarity_reason: geminiRecommendations.find(a => a.title === title)?.similarity_reason });
+         const matchingRecommendation = geminiRecommendations.find(a => a.title === title);
+         if(matchingRecommendation) {
+            cachedResults.push({ 
+              ...cachedAnime, 
+              similarity_reason: matchingRecommendation.similarity_reason });
+
+         }
       } else {
         toFetch.push(title);
       }
@@ -219,8 +225,12 @@ const fetchAllAnimes = async (geminiRecommendations) => {
           const animeData = await fetchAnimeFromJikanByName(title);
           if(animeData) {
             cache.set(title, animeData);
-            return { ...animeData, similarity_reason: geminiRecommendations.find(a => a.title === title)?.similarity_reason }
-          } else return null;
+            const matchingRecommendation = geminiRecommendations.find(a => a.title === title);
+            return { 
+              ...animeData, 
+              similarity_reason: matchingRecommendation ? matchingRecommendation.similarity_reason : null 
+            }
+          }
         } catch (error) {
           console.error(
             `Error fetching anime with title: ${title}`,
