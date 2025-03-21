@@ -6,7 +6,7 @@ const jikanUrl = JIKAN_URL;
 
 const getSeasonHottest = async (req, res) => {
     try {
-        const jikanResponse = await axios.get(`${jikanUrl}seasons/now?limit=10`);
+        const jikanResponse = await axios.get(`${jikanUrl}seasons/now?limit=20`);
 
         const extracted = jikanResponse.data.data.map((anime) => ({
             mal_id: anime.mal_id,
