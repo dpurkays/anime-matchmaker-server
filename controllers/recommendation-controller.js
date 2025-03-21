@@ -10,6 +10,7 @@ const cache = new NodeCache({ stdTTL: 60 * 5}); //cached for 5mins
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 const jikanUrl = JIKAN_URL;
+const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const limiter = new Bottleneck({
   minTime: 1350, 
@@ -35,7 +36,10 @@ const getAnimeRecsByMALUser = async (req, res) => {
     }
 
     const animeListString = malAnimeList.join(", ");
+    console.log("🔍 Fetching recommendations from Gemini...");
     const geminiRecommendations = await fetchAnimeRecommendationsFromGemini("mal", animeListString);
+    console.log("Gemini Recs Received: ", geminiRecommendations)
+    await delay(2000);
     const animeRecommendations = await fetchAllAnimes(geminiRecommendations.recommendations);
 
     if(animeRecommendations.length > 0) {
@@ -51,31 +55,106 @@ const getAnimeRecsByMALUser = async (req, res) => {
 const fetchMALanimeList = async (username) => {
   try{
     if (!username) {
-      return res.status(400).json({ error: "Mal username is required" });
-    }
+      console.error("MAL username is required");
+      return null;
+    } 
 
-    let response = await axios.get(`${jikanUrl}users/${username}/favorites`);
-    let animeList = [];
-    if(response.data?.data?.length > 0) {
-      animeList = response.data.data.anime.map((anime) => anime.title).filter(Boolean);
-    }
+  //   let response;
+  //    let animeList = [];
+  //   try{
+  //       response = await axios.get(`${jikanUrl}users/${username}/favorites`);
+  //   } catch (error) {
+  //     if(error.response && error.response.status === 429) {
+  //       console.error(`Rate limit exceeded for favorites. Retrying in 2s...`);
+  //       if (retryCount < 3) {
+  //         await delay(2000);
+  //         return fetchMALanimeList(username, retryCount + 1, hasLogged);
+  //       } else {
+  //         console.error(`Failed to fetch favorites after 3 retries.`);
+  //         return [];
+  //       }
+  //     }
+  // }
+    let animeList = await fetchFavorites(username);
+
     if (animeList.length === 0) {
       console.log("No favorites....looking at watch history");
-      response = await axios.get(`${jikanUrl}users/${username}/history?type=anime`);
-      animeList = response.data?.data
-        ?.map((anime) => anime.entry.name)
-        ?.filter(Boolean);
+      animeList = await fetchWatchHistory(username);
     }
+    // if(response.data?.data?.length > 0) {
+    //   animeList = response.data.data.anime.map((anime) => anime.title).filter(Boolean);
+    // }
 
-    console.log(animeList)
+    // if (animeList.length === 0) {
+    //   if(!hasLogged) {
+    //     console.log("No favorites....looking at watch history");
+    //     hasLogged = true;
+    //   }
+    //   await delay(2000);
+    //   try {
+    //     response = await axios.get(`${jikanUrl}users/${username}/history?type=anime`);
+    //   } catch(error) {
+    //     if (retryCount < 3) {
+    //         await delay(2000);
+    //         return fetchMALanimeList(username, retryCount + 1, hasLogged);
+    //       } else {
+    //         console.error(`Failed to fetch watch history after 3 retries.`);
+    //         return [];
+    //       }
+    //     }
+    //     animeList = response.data?.data
+    //       ?.map((anime) => anime.entry.name)
+    //       ?.filter(Boolean);
+    //   }
 
+    // console.log(animeList)
     return animeList;
 
   } catch(error) {
     console.error(error);
-    res.status(500).json({ error: "Failed to fetch MAL animes" });
+    throw new Error("Failed to fetch MAL animes");
   }
 }
+
+const fetchFavorites = async (username, retryCount = 0) => {
+  try {
+    const response = await axios.get(`${jikanUrl}users/${username}/favorites`);
+    if (response.data?.data?.length > 0) {
+      return response.data.data.anime.map((anime) => anime.title).filter(Boolean);
+    }
+    return [];
+  } catch (error) {
+    if (error.response && error.response.status === 429) {
+      console.error(`Rate limit exceeded for favorites. Retrying in 2s...`);
+      if (retryCount < 3) {
+        await delay(2000);
+        return fetchFavorites(username, retryCount + 1);
+      } else {
+        console.error(`Failed to fetch favorites after 3 retries.`);
+      }
+    }
+    return [];
+  }
+}
+
+const fetchWatchHistory = async (username, retryCount = 0) => {
+  try {
+    await delay(2000); // Delay before making the request
+    const response = await axios.get(`${jikanUrl}users/${username}/history?type=anime`);
+    return response.data?.data?.map((anime) => anime.entry.name).filter(Boolean) || [];
+  } catch (error) {
+    if (error.response && error.response.status === 429) {
+      console.error(`Rate limit exceeded for watch history. Retrying in 2s...`);
+      if (retryCount < 3) {
+        await delay(2000);
+        return fetchWatchHistory(username, retryCount + 1);
+      } else {
+        console.error(`Failed to fetch watch history after 3 retries.`);
+      }
+    }
+    return [];
+  }
+};
 
 const getAnimeByMood = async (req, res) => {
   try {
@@ -142,7 +221,6 @@ const getAnimeByTVShow = async (req, res) => {
 const fetchAnimeRecommendationsFromGemini = async (type, tvShow) => {
   try {
     const prompt = getGeminiPrompt(type, tvShow);
-
     const result = await model.generateContent(prompt);
     return parseAIresponse(result);
   } catch (error) {
@@ -244,7 +322,7 @@ const fetchAnimeFromJikanByName = async (title, retryCount = 0) => {
     if (error.response && error.response.status === 429) {
       console.error(`Rate limit exceeded for: ${title}. Retrying in 2s...`);
       if(retryCount < 3) {
-        await new Promise((resolve) => setTimeout(resolve, 2000));
+        await delay(2000);
         return fetchAnimeFromJikanByName(title, retryCount + 1);
       } else {
         console.error(`Failed after 3 retries: ${title}`);
