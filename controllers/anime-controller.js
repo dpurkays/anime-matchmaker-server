@@ -2,7 +2,28 @@ import axios from "axios";
 import "dotenv/config";
 import { formatAiringStatus, formatDuration, formatRating, JIKAN_URL } from "../utils/animeUtils.js";
 
-const jikanUrl = JIKAN_URL
+const jikanUrl = JIKAN_URL;
+
+const getSeasonHottest = async (req, res) => {
+    try {
+        const jikanResponse = await axios.get(`${jikanUrl}seasons/now?limit=10`);
+
+        const extracted = jikanResponse.data.data.map((anime) => ({
+            mal_id: anime.mal_id,
+            image: anime.images.jpg.image_url,
+            rating: formatRating(anime.rating),
+            title_english: anime.title_english || anime.title,
+            year: anime.year || "",
+        }));
+
+        res.status(200).json(extracted);
+        
+    } catch(error) {
+        console.error(error);
+        res.status(500).json({ error: "Error fetching hottest season animes" });
+    }
+}
+
 const getAnime = async (req, res) => {
     try {
         const {animeId} = req.params;
@@ -41,4 +62,4 @@ const getAnime = async (req, res) => {
     }
 }
 
-export { getAnime };
+export { getAnime, getSeasonHottest };

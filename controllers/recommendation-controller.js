@@ -21,6 +21,8 @@ const limiter = new Bottleneck({
 });
 
 const getAnimeRecsByMALUser = async (req, res) => {
+    console.log(`🔄 API called: getAnimeRecsByMALUser for ${req.query.malUsername} at ${new Date().toISOString()}`);
+
   try{
     const malUsername = req.query.malUsername;
 
@@ -59,60 +61,19 @@ const fetchMALanimeList = async (username) => {
       return null;
     } 
 
-  //   let response;
-  //    let animeList = [];
-  //   try{
-  //       response = await axios.get(`${jikanUrl}users/${username}/favorites`);
-  //   } catch (error) {
-  //     if(error.response && error.response.status === 429) {
-  //       console.error(`Rate limit exceeded for favorites. Retrying in 2s...`);
-  //       if (retryCount < 3) {
-  //         await delay(2000);
-  //         return fetchMALanimeList(username, retryCount + 1, hasLogged);
-  //       } else {
-  //         console.error(`Failed to fetch favorites after 3 retries.`);
-  //         return [];
-  //       }
-  //     }
-  // }
     let animeList = await fetchFavorites(username);
 
     if (animeList.length === 0) {
       console.log("No favorites....looking at watch history");
       animeList = await fetchWatchHistory(username);
     }
-    // if(response.data?.data?.length > 0) {
-    //   animeList = response.data.data.anime.map((anime) => anime.title).filter(Boolean);
-    // }
-
-    // if (animeList.length === 0) {
-    //   if(!hasLogged) {
-    //     console.log("No favorites....looking at watch history");
-    //     hasLogged = true;
-    //   }
-    //   await delay(2000);
-    //   try {
-    //     response = await axios.get(`${jikanUrl}users/${username}/history?type=anime`);
-    //   } catch(error) {
-    //     if (retryCount < 3) {
-    //         await delay(2000);
-    //         return fetchMALanimeList(username, retryCount + 1, hasLogged);
-    //       } else {
-    //         console.error(`Failed to fetch watch history after 3 retries.`);
-    //         return [];
-    //       }
-    //     }
-    //     animeList = response.data?.data
-    //       ?.map((anime) => anime.entry.name)
-    //       ?.filter(Boolean);
-    //   }
-
-    // console.log(animeList)
+   
     return animeList;
 
   } catch(error) {
     console.error(error);
     throw new Error("Failed to fetch MAL animes");
+    
   }
 }
 

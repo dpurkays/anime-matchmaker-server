@@ -11,6 +11,12 @@ const PORT = process.env.PORT || 5050;
 app.use(express.json());
 app.use(cors());
 
+app.use((req, res, next) => {
+  console.log(`[${new Date().toISOString()}] ${req.method} ${req.originalUrl}`);
+  next();
+});
+
+
 app.use("/api/moods", moodsRoutes);
 app.use("/api/recommendations", recommendationsRoutes);
 app.use("/api/anime", animeRoutes);
