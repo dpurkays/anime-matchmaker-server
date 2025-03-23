@@ -27,6 +27,11 @@ const clearCache = async (req, res) => {
 }
 
 const getAnimeRecsByMALUser = async (req, res) => {
+  req.on('close', () => {
+    requestAborted = true;
+    console.log('❌ Request was aborted by the user');
+  });
+
   try{
     const malUsername = req.query.malUsername;
 
@@ -43,7 +48,7 @@ const getAnimeRecsByMALUser = async (req, res) => {
     const animeListString = malAnimeList.join(", ");
     const geminiRecommendations = await fetchAnimeRecommendationsFromGemini("mal", animeListString);
     await delay(2000);
-    const animeRecommendations = await fetchAllAnimes(geminiRecommendations.recommendations);
+    const animeRecommendations = await fetchAllAnimes(geminiRecommendations.recommendations, () => requestAborted);
     if(animeRecommendations.length > 0) {
         cache.set(malUsername, animeRecommendations);
     }
