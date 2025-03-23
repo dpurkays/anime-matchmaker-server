@@ -241,7 +241,11 @@ const fetchAllAnimes = async (geminiRecommendations) => {
       .map((response) => response.value)
     ];
 
-    return successfulResponses;
+    const uniqueResponses = Array.from(
+    new Map(successfulResponses.map((anime) => [anime.mal_id, anime])).values()
+);
+
+    return uniqueResponses;
   } catch (error) {
     console.error(error);
     return [];
