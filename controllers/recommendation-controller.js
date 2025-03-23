@@ -1,14 +1,15 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
+// import { GoogleGenerativeAI } from "@google/generative-ai";
 import axios from "axios";
 import Bottleneck from "bottleneck";
 import "dotenv/config";
 import NodeCache from "node-cache";
 import { formatRating, JIKAN_URL } from "../utils/animeUtils.js";
-import { getGeminiPrompt, parseAIresponse } from "../utils/geminiUtils.js";
+// import { getGeminiPrompt, parseAIresponse } from "../utils/geminiUtils.js";
+import { fetchAnimeRecommendationsFromGemini } from "../helpers/geminiHelpers.js";
 
 const cache = new NodeCache({ stdTTL: 2 * 60 * 60}); // cached for 2 hours
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+// const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+// const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 const jikanUrl = JIKAN_URL;
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -26,9 +27,9 @@ const clearCache = async (req, res) => {
 }
 
 const getAnimeRecsByMALUser = async (req, res) => {
+  let requestAborted = false;
   req.on('close', () => {
     requestAborted = true;
-    console.log('❌ Request was aborted by the user');
   });
 
   try{
@@ -182,16 +183,16 @@ const getAnimeByTVShow = async (req, res) => {
   }
 };
 
-const fetchAnimeRecommendationsFromGemini = async (type, tvShow) => {
-  try {
-    const prompt = getGeminiPrompt(type, tvShow);
-    const result = await model.generateContent(prompt);
-    return parseAIresponse(result);
-  } catch (error) {
-    console.error("Error fetching recommendations from Gemini API: ", error);
-    return { recommendations: [] };
-  }
-};
+// const fetchAnimeRecommendationsFromGemini = async (type, input) => {
+//   try {
+//     const prompt = getGeminiPrompt(type, input);
+//     const result = await model.generateContent(prompt);
+//     return parseAIresponse(result);
+//   } catch (error) {
+//     console.error("Error fetching recommendations from Gemini API: ", error);
+//     return { recommendations: [] };
+//   }
+// };
 
 const fetchAllAnimes = async (geminiRecommendations, isCancelledFn) => {
   try {
