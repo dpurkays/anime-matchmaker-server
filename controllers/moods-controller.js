@@ -16,6 +16,7 @@ const getAllMoods = (req, res) => {
             emoji,
             description
         }));
+        console.log(moods);
         res.status(200).json(moods);
     } catch(error) {
         res.status(500).json({error: "Error retrieving moods."});
@@ -32,6 +33,7 @@ const getAllGenresByMood = (req, res) => {
             return res.status(404).json({error: "Mood not found"});
         }
         const genres = mood.genres;
+        console.log({genres})
         res.json({genres});
     } catch(error){
         res.status(500).json({error: "Error retrieving genres by mood"});
