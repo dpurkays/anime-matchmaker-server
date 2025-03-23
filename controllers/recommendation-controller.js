@@ -6,8 +6,7 @@ import NodeCache from "node-cache";
 import { formatRating, JIKAN_URL } from "../utils/animeUtils.js";
 import { getGeminiPrompt, parseAIresponse } from "../utils/geminiUtils.js";
 
-// const cache = new NodeCache({ stdTTL: 60 * 5}); //cached for 5mins
-const cache = new NodeCache({ stdTTL: 2 * 60 * 60}); //cached for 2 hours
+const cache = new NodeCache({ stdTTL: 2 * 60 * 60}); // cached for 2 hours
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 const jikanUrl = JIKAN_URL;
