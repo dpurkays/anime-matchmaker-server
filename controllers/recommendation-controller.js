@@ -1,7 +1,7 @@
 import axios from "axios";
 import "dotenv/config";
 import { fetchAnimeRecommendationsFromGemini } from "../helpers/geminiHelpers.js";
-import { cache, fetchAllAnimes, fetchFavorites, fetchWatchHistory } from "../helpers/jikanHelpers.js";
+import { cache, fetchAllAnimes, fetchMALAnimeList } from "../helpers/jikanHelpers.js";
 import { formatRating, JIKAN_URL } from "../utils/animeUtils.js";
 
 const jikanUrl = JIKAN_URL;
@@ -22,14 +22,11 @@ const getAnimeRecsByMALUser = async (req, res) => {
     const malUsername = req.query.malUsername;
 
     const cachedData = cache.get(malUsername);
-    if (cachedData) {
-      return res.status(200).json(cachedData);
-    }
+    if (cachedData) return res.status(200).json(cachedData);
 
-    const malAnimeList = await fetchMALanimeList(malUsername);
-    if (malAnimeList.length === 0) {
-      return res.status(404).json({ error: "No anime found in user favorites or watch history." });
-    }
+    const malAnimeList = await fetchMALAnimeList(malUsername);
+    if(malAnimeList === null) return res.status(404).json({error: "MAL user not found"});
+    if (malAnimeList.length === 0) return res.status(404).json({ error: "No anime found in user favorites or watch history." });
 
     const animeListString = malAnimeList.join(", ");
     const geminiRecommendations = await fetchAnimeRecommendationsFromGemini("mal", animeListString);
@@ -45,28 +42,28 @@ const getAnimeRecsByMALUser = async (req, res) => {
   }
 }
 
-const fetchMALanimeList = async (username) => {
-  try{
-    if (!username) {
-      console.error("MAL username is required");
-      return null;
-    } 
+// const fetchMALanimeList = async (username) => {
+//   try{
+//     if (!username) {
+//       console.error("MAL username is required");
+//       return null;
+//     } 
 
-    let animeList = await fetchFavorites(username);
+//     let animeList = await fetchFavorites(username);
 
-    if (animeList.length === 0) {
-      console.log("No favorites....looking at watch history");
-      animeList = await fetchWatchHistory(username);
-    }
+//     if (animeList.length === 0) {
+//       console.log("No favorites....looking at watch history");
+//       animeList = await fetchWatchHistory(username);
+//     }
    
-    return animeList;
+//     return animeList;
 
-  } catch(error) {
-    console.error(error);
-    throw new Error("Failed to fetch MAL animes");
+//   } catch(error) {
+//     console.error(error);
+//     throw new Error("Failed to fetch MAL animes");
     
-  }
-}
+//   }
+// }
 
 const getAnimeByMood = async (req, res) => {
   try {

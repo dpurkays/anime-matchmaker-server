@@ -128,6 +128,30 @@ const fetchAnimeFromJikanByName = async (title, retryCount = 0) => {
   }
 };
 
+
+const fetchMALAnimeList = async (username) => {
+  try{
+    if (!username) {
+      console.error("MAL username is required");
+      return null;
+    } 
+
+    let animeList = await fetchFavorites(username);
+    if(animeList === null) return null;
+    if (animeList.length === 0) {
+      console.log("No favorites....looking at watch history");
+      animeList = await fetchWatchHistory(username);
+    }
+   
+    return animeList;
+
+  } catch(error) {
+    console.error(error);
+    throw new Error("Failed to fetch MAL animes");
+    
+  }
+}
+
 const fetchFavorites = async (username, retryCount = 0) => {
   try {
     const response = await axios.get(`${jikanUrl}users/${username}/favorites`); 
@@ -136,6 +160,10 @@ const fetchFavorites = async (username, retryCount = 0) => {
     }
     return [];
   } catch (error) {
+    if(error.response?.status === 404) {
+      console.error(`user ${username} not found.`);
+      return null;
+    }
     if (error.response && error.response.status === 429) {
       console.error(`Rate limit exceeded for favorites. Retrying in 3s...`);
       if (retryCount < 3) {
@@ -143,10 +171,12 @@ const fetchFavorites = async (username, retryCount = 0) => {
         return fetchFavorites(username, retryCount + 1);
       } else {
         console.error(`Failed to fetch favorites after 3 retries.`);
+        throw error;
       }
     }
-    return [];
   }
+  console.error(`Unexpected error fetching favorites:`, error.message);
+  throw error;
 }
 
 const fetchWatchHistory = async (username, retryCount = 0) => {
@@ -168,4 +198,5 @@ const fetchWatchHistory = async (username, retryCount = 0) => {
   }
 };
 
-export { cache, fetchAllAnimes, fetchAnimeFromJikanByName, fetchFavorites, fetchWatchHistory };
+export { cache, fetchAllAnimes, fetchAnimeFromJikanByName, fetchFavorites, fetchMALAnimeList, fetchWatchHistory };
+
