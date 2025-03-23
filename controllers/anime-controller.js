@@ -15,7 +15,7 @@ const getSeasonHottest = async (req, res) => {
             title_english: anime.title_english || anime.title,
             year: anime.year || "",
         }));
-        console.log(extracted)
+        // console.log(extracted)
         res.status(200).json(extracted);
         
     } catch(error) {
@@ -53,7 +53,7 @@ const getAnime = async (req, res) => {
             aired: anime.aired.to,
             youtube_id: anime.trailer.youtube_id
         }
-        console.log(extractedAnime)
+        // console.log(extractedAnime)
         res.status(200).json(extractedAnime);
 
     } catch(error) {

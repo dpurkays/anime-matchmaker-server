@@ -21,15 +21,21 @@ const limiter = new Bottleneck({
   reservoirRefreshAmount: 60, // Restores 60 requests per minute
 });
 
+const clearCache = async (req, res) => {
+  cache.flushAll();
+  res.status(200).json({ message: "✅ Cache cleared successfully." });
+}
+
+
 const getAnimeRecsByMALUser = async (req, res) => {
-    console.log(`🔄 API called: getAnimeRecsByMALUser for ${req.query.malUsername} at ${new Date().toISOString()}`);
+    // console.log(`🔄 API called: getAnimeRecsByMALUser for ${req.query.malUsername} at ${new Date().toISOString()}`);
 
   try{
     const malUsername = req.query.malUsername;
 
     const cachedData = cache.get(malUsername);
     if (cachedData) {
-      console.log("Serving from cache:", malUsername);
+      // console.log("Serving from cache:", malUsername);
       return res.status(200).json(cachedData);
     }
 
@@ -39,16 +45,16 @@ const getAnimeRecsByMALUser = async (req, res) => {
     }
 
     const animeListString = malAnimeList.join(", ");
-    console.log("🔍 Fetching recommendations from Gemini...");
+    // console.log("🔍 Fetching recommendations from Gemini...");
     const geminiRecommendations = await fetchAnimeRecommendationsFromGemini("mal", animeListString);
-    console.log("Gemini Recs Received: ", geminiRecommendations)
+    // console.log("Gemini Recs Received: ", geminiRecommendations)
     await delay(2000);
     const animeRecommendations = await fetchAllAnimes(geminiRecommendations.recommendations);
-
+    console.log(animeRecommendations);
     if(animeRecommendations.length > 0) {
         cache.set(malUsername, animeRecommendations);
     }
-    res.status(200).json(animeRecommendations);
+    res.status(200).json(animeRecommendations.filter(Boolean));
   } catch(error) {
     console.error(error);
     res.status(500).json({ error: "Failed to fetch anime recommendations" });
@@ -173,7 +179,7 @@ const getAnimeByTVShow = async (req, res) => {
         cache.set(tvShow, animeRecommendations);
     }
 
-    res.status(200).json(animeRecommendations);
+    res.status(200).json(animeRecommendations.filter(Boolean));
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Failed to fetch anime recommendations" });
@@ -309,5 +315,5 @@ const fetchAnimeFromJikanByName = async (title, retryCount = 0) => {
   }
 };
 
-export { getAnimeByMood, getAnimeByTVShow, getAnimeRecsByMALUser };
+export { clearCache, getAnimeByMood, getAnimeByTVShow, getAnimeRecsByMALUser };
 
