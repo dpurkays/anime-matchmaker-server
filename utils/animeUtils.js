@@ -7,6 +7,7 @@ const formatRating = (rating) => {
 
 const formatAiringStatus = (status) => {
     if (status === "Finished Airing") return "Completed";
+    return status;
 }
 
 const formatDuration = (duration) => {

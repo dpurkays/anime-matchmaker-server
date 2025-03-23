@@ -48,7 +48,7 @@ const getAnime = async (req, res) => {
             studio: anime.studios[0].name,
             rating: anime.rating,
             year: anime.year || "",
-            aired: anime.aired.to,
+            aired: anime.aired.string,
             youtube_id: anime.trailer.youtube_id
         }
         res.status(200).json(extractedAnime);
