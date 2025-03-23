@@ -12,7 +12,7 @@ const getSeasonHottest = async (req, res) => {
             mal_id: anime.mal_id,
             image: anime.images.jpg.large_image_url, //|| anime.images.jpg.image_url,
             rating: formatRating(anime.rating),
-            title_english: animetitle_english || anime.title,
+            title_english: anime.title_english || anime.title,
             year: anime.year || "",
         }));
         res.status(200).json(extracted);
