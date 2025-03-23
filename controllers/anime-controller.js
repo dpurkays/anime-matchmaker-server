@@ -12,10 +12,9 @@ const getSeasonHottest = async (req, res) => {
             mal_id: anime.mal_id,
             image: anime.images.jpg.large_image_url, //|| anime.images.jpg.image_url,
             rating: formatRating(anime.rating),
-            title_english: anime.title_english || anime.title,
+            title_english: animetitle_english || anime.title,
             year: anime.year || "",
         }));
-        // console.log(extracted)
         res.status(200).json(extracted);
         
     } catch(error) {
@@ -32,7 +31,6 @@ const getAnime = async (req, res) => {
             return res.status(404).json({ error: "No anime found for given genres" });
         }
         const anime = jikanResponse.data.data;
-        // console.log(anime)
         const extractedAnime = {
             mal_id: anime.mal_id,
             image: anime.images.jpg.image_url,
@@ -53,7 +51,6 @@ const getAnime = async (req, res) => {
             aired: anime.aired.to,
             youtube_id: anime.trailer.youtube_id
         }
-        // console.log(extractedAnime)
         res.status(200).json(extractedAnime);
 
     } catch(error) {

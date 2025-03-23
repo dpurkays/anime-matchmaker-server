@@ -28,14 +28,11 @@ const clearCache = async (req, res) => {
 
 
 const getAnimeRecsByMALUser = async (req, res) => {
-    // console.log(`🔄 API called: getAnimeRecsByMALUser for ${req.query.malUsername} at ${new Date().toISOString()}`);
-
   try{
     const malUsername = req.query.malUsername;
 
     const cachedData = cache.get(malUsername);
     if (cachedData) {
-      // console.log("Serving from cache:", malUsername);
       return res.status(200).json(cachedData);
     }
 
@@ -45,9 +42,7 @@ const getAnimeRecsByMALUser = async (req, res) => {
     }
 
     const animeListString = malAnimeList.join(", ");
-    // console.log("🔍 Fetching recommendations from Gemini...");
     const geminiRecommendations = await fetchAnimeRecommendationsFromGemini("mal", animeListString);
-    // console.log("Gemini Recs Received: ", geminiRecommendations)
     await delay(2000);
     const animeRecommendations = await fetchAllAnimes(geminiRecommendations.recommendations);
     console.log(animeRecommendations);
@@ -127,8 +122,6 @@ const fetchWatchHistory = async (username, retryCount = 0) => {
 const getAnimeByMood = async (req, res) => {
   try {
     const jikan_genre_ids = req.query.jikan_genre_ids?.split(",") || [];
-    // const jikanUrl = "https://api.jikan.moe/v4/anime";
-
     const jikanResponse = await axios.get(
       `${jikanUrl}anime?genres=${jikan_genre_ids.join(",")}&order_by=popularity`
     );
@@ -156,7 +149,6 @@ const getAnimeByMood = async (req, res) => {
 const getAnimeByTVShow = async (req, res) => {
   try {
     const tvShow = req.query.tvShow;
-    // console.log(tvShow);
 
     if (!tvShow) {
       return res.status(400).json({ error: "TV show name is required" });
@@ -164,11 +156,8 @@ const getAnimeByTVShow = async (req, res) => {
 
     const cachedData = cache.get(tvShow);
     if (cachedData) {
-      // console.log("Serving from cache:", tvShow);
       return res.status(200).json(cachedData);
     }
-
-    // console.log("🔍 Fetching recommendations from Gemini...");
 
     const geminiRecommendations = await fetchAnimeRecommendationsFromGemini("tv", tvShow);
     const animeRecommendations = await fetchAllAnimes(
@@ -206,7 +195,6 @@ const fetchAllAnimes = async (geminiRecommendations) => {
 
     animeTitles.forEach((title) => {
       const cachedAnime = cache.get(title);
-      // console.log("nice, this anime was cached!",title);
       if(cachedAnime !== undefined) {
          const matchingRecommendation = geminiRecommendations.find(a => a.title === title);
          if(matchingRecommendation) {
@@ -221,11 +209,9 @@ const fetchAllAnimes = async (geminiRecommendations) => {
     })
 
     if (toFetch.length === 0) {
-      // console.log("All results served from cache!");
       return cachedResults;
     }
 
-    // console.log("🔍 Fetching remaining anime from Jikan:", toFetch);
     const fetchedAnimes = await Promise.allSettled(
       toFetch.map(async (title) => {
         try {
@@ -264,13 +250,8 @@ const fetchAllAnimes = async (geminiRecommendations) => {
 
 const fetchAnimeFromJikanByName = async (title, retryCount = 0) => {
   try {
-    // console.time(`⏳ Fetching: ${title}`); // Start timer
-    // const jikanUrl = "https://api.jikan.moe/v4/anime";
-
     const cachedAnime = cache.get(title);
     if (cachedAnime !== undefined) {
-      // console.timeEnd(`⏳ Fetching: ${title}`); // End timer (instant for cached)
-      // console.log(`Served cached data for: ${title}`);
       return cachedAnime;
     }
 
@@ -293,10 +274,8 @@ const fetchAnimeFromJikanByName = async (title, retryCount = 0) => {
       year: anime.year ||  "",
     };
     cache.set(title, extractedAnime);
-    // console.log(`got ${title}`);
     return extractedAnime;
   } catch (error) {
-    //  console.timeEnd(`⏳ Fetching: ${title}`);
     if (error.response && error.response.status === 429) {
       console.error(`Rate limit exceeded for: ${title}. Retrying in 2s...`);
       if(retryCount < 3) {
