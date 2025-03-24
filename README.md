@@ -31,7 +31,7 @@ Finding the right anime can be overwhelming due to the large volume of anime. Wh
 
 To run this project locally, follow these steps:
 
-1. Clone this repo and server side repo: [Anime Matchmaker Client Repo](https://github.com/dpurkays/anime-matchmaker)
+1. Clone this repo and client-side repo: [Anime Matchmaker Client Repo](https://github.com/dpurkays/anime-matchmaker)
 
 Do the following in both folders (anime-matchmaker and anime-matchmaker-server):
 
