@@ -28,7 +28,7 @@ const getAnime = async (req, res) => {
         const {animeId} = req.params;
         const jikanResponse = await axios.get(`${jikanUrl}anime/${animeId}/full`);
         if (!jikanResponse.data.data || jikanResponse.data.data.length === 0) {
-            return res.status(404).json({ error: "No anime found for given genres" });
+            return res.status(404).json({ error: `No anime with id ${animeId}` });
         }
         const anime = jikanResponse.data.data;
         const extractedAnime = {
