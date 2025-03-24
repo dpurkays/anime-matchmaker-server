@@ -139,7 +139,6 @@ const fetchMALAnimeList = async (username) => {
     let animeList = await fetchFavorites(username);
     if(animeList === null) return null;
     if (animeList.length === 0) {
-      console.log("No favorites....looking at watch history");
       animeList = await fetchWatchHistory(username);
     }
    
