@@ -4,7 +4,9 @@ A personalized anime recommender connecting you to shows you'll love through tai
 
 ## Overview
 
-Anime Matchmaker is a web application that helps users discover new anime based on their mood, watch history and personalized preference. By leveraging AI-powered recommendations. the app suggests anime titles tailored to each user's taste.
+Anime Matchmaker is a web application that helps users discover new anime based on their mood, watch history, and personal preferences. The app suggests anime titles tailored to each user's taste by leveraging AI-powered recommendations.
+
+Server-side code can be found here: https://github.com/dpurkays/anime-matchmaker-server 
 
 ### Problem Space
 
@@ -13,13 +15,13 @@ Finding the right anime can be overwhelming due to the large volume of anime. Wh
 ### User Profile
 
 - **Anime Enthusiasts:** Users who would want better recommendations beyond simple genre-based filtering
-- **Casual Viewers:** Users looking for animes that matches their mood, whether it's action-packed, romcom, or wholesome romance.
-- **New to Anime**: Users who are unfamiliar to anime and need guidance based on their favorite movies or tv shows.
+- **Casual Viewers:** Users looking for animes that match their mood, whether it's action-packed, romcom, or wholesome romance.
+- **New to Anime**: Users who are unfamiliar with anime and need guidance based on their favorite movies or TV shows.
 
 ### Features
 
 - **Mood-Based Anime Search:** Users select a mood (e.g. "Chill & Relaxing", "High-Energy Action Packed") to get anime suggestions.
-- **AI powered recommendations:** Uses Gemini AI to analyse a user's watch list history and suggest relevant anime suggestions.
+- **AI-powered recommendations:** Uses Gemini AI to analyse a user's watch list history and suggest relevant anime suggestions.
 
   > _Note: "Watch list history" refers to the user’s public favorites or watch history list visible on their MyAnimeList profile._
 
@@ -66,19 +68,19 @@ Do the following in both folders (anime-matchmaker and anime-matchmaker-server):
 - Gemini API - https://ai.google.dev/api?lang=node
   - Gemini API is used to generate anime recommendations based on natural language input such as a user’s favorites/watch-history list, or favorite tv shows/movies.
 - Jikan API - https://docs.api.jikan.moe/
-  - unofficial api for MyAnimeList (MAL)
+  - unofficial API for MyAnimeList (MAL)
 
 ### Sitemap
 
-- **Home Page:** Entry point with options to search anime by mood, based on TV show/movie, based on user's watch history or season's hottest.
+- **Home Page:** Entry point with options to search anime by mood, based on TV show/movie, based on the user's watch history or season's hottest.
   - Recommendations Selection
-    - **Mood Based Search:** Users selects a mood and genre to get anime recommendations
+    - **Mood-Based Search:** Users select a mood and genre to get anime recommendations
       - **Anime Details Page**
-    - **Based TV series or Movie:** Users inputs a TV show or movie to get similar animes.
+    - **Based TV series or Movie:** Users input a TV show or movie to get similar animes.
       - **Anime Details Page**
-    - **Based on MAL user:** Users gets recommendations based on their MAL's favorites or watch history.
+    - **Based on MAL user:** Users get recommendations based on their MAL favorites or watch history.
       - **Anime Details Page**
-    - **Season's Hottest Anime:** Users gets the most popular anime from the current season.
+    - **Season's Hottest Anime:** Users get the most popular anime from the current season.
       - **Anime Details Page**
 - **Anime Details Page:** Displays anime metadata such as title, genre, synopsis, trailer and other metadata.
 - **Not Found Page:** For non existing pages.
@@ -111,7 +113,7 @@ Do the following in both folders (anime-matchmaker and anime-matchmaker-server):
 
 - Gets all moods
 - Will return 500 for error retrieving moods
-- If successfull, returns a 200 status code
+- If successful, returns a 200 status code
 
 **Response Body Example**
 
@@ -133,7 +135,7 @@ Do the following in both folders (anime-matchmaker and anime-matchmaker-server):
 - Gets all genres based on mood
 - Will return 404 if mood doesn't exist
 - Will return 500 for error retrieving genres
-- If successfull, returns a 200 status code
+- If successful, returns a 200 status code
 
 **Response Body Example**
 
@@ -159,7 +161,7 @@ Do the following in both folders (anime-matchmaker and anime-matchmaker-server):
 - Will return 404 if mood doesn't exist
 - Will return 404 if genre doesn't exist
 - Will return 500 for error retrieving genre
-- If successfull, returns a 200 status code
+- If successful, returns a 200 status code
 
 **Response Body Example**
 
@@ -185,7 +187,7 @@ Do the following in both folders (anime-matchmaker and anime-matchmaker-server):
   - Can have multiple genre ids separated by a comma
 - Will return 404 if genre doesn't exist
 - Will return 500 for error retrieving animes
-- If successfull, returns a 200 status code
+- If successful, returns a 200 status code
 
 **Sample Call:** http://localhost:5050/api/recommendations/mood/22,74
 
@@ -208,9 +210,9 @@ Do the following in both folders (anime-matchmaker and anime-matchmaker-server):
 
 - Gets animes based on tv series or movies
 - A query is required.
-- Will return 400 if there's no query parameters
+- Will return 400 if there are no query parameters
 - Will return 500 for error retrieving animes
-- If successfull, returns a 200 status code
+- If successful, returns a 200 status code
 
 **Sample Call:** http://localhost:5050/api/recommendations/tv?tvShow=The%20Matrix
 
@@ -232,11 +234,11 @@ Do the following in both folders (anime-matchmaker and anime-matchmaker-server):
 
 #### **GET api/recommendations/mal/:username**
 
-- Gets animes based on user's MAL favorite list or watch list
+- Gets animes based on the user's MAL favorite list or watch list
 - A query is required.
-- Will return 404 if MAL username doesn't exist or if there are no animes in their favorite or watch list.
+- Will return 404 if the MAL username doesn't exist or if there are no animes in their favorite or watch list.
 - Will return 500 for error retrieving animes
-- If successfull, returns a 200 status code
+- If successful, returns a 200 status code
 
 **Response Body Example**
 
@@ -270,7 +272,7 @@ Do the following in both folders (anime-matchmaker and anime-matchmaker-server):
 
 - Gets seasons' hottest animes
 - Will return 500 for error retrieving animes
-- If successfull, returns a 200 status code
+- If successful, returns a 200 status code
 
 **Response Body Example**
 
@@ -289,10 +291,10 @@ Do the following in both folders (anime-matchmaker and anime-matchmaker-server):
 
 #### **GET api/recommendations/anime/:animeId**
 
-- Gets information of one anime
+- Gets information about one anime
 - Will return 404 if anime with animeId is not found.
 - Will return 500 for error retrieving the anime
-- If successfull, returns a 200 status code
+- If successful, returns a 200 status code
 
 **Response Body Example**
 
@@ -359,7 +361,7 @@ Do the following in both folders (anime-matchmaker and anime-matchmaker-server):
 ### Week 2
 
 - Anime Details Page
-- Implement AI powered recommendation using Gemini API
+- Implement AI-powered recommendations using Gemini API
 - Final testing and bug fixes
 
 ## Future Implementation
