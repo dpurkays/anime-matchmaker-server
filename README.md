@@ -30,9 +30,10 @@ Finding the right anime can be overwhelming due to the large volume of anime. Wh
 To run this project locally, follow these steps:
 
 1. Clone this repo and server side repo: [Anime Matchmaker Client Repo](https://github.com/dpurkays/anime-matchmaker)
-2. Install dependencies and create env
 
-   Do the following in both folders (anime-matchmaker and anime-matchmaker-server):
+Do the following in both folders (anime-matchmaker and anime-matchmaker-server):
+
+2. Install dependencies and create env
 
    i. npm install
 
