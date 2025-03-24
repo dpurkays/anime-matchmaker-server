@@ -6,7 +6,7 @@ A personalized anime recommender connecting you to shows you'll love through tai
 
 Anime Matchmaker is a web application that helps users discover new anime based on their mood, watch history, and personal preferences. The app suggests anime titles tailored to each user's taste by leveraging AI-powered recommendations.
 
-Server-side code can be found here: https://github.com/dpurkays/anime-matchmaker-server 
+Client-side code can be found here: [https://github.com/dpurkays/anime-matchmaker](https://github.com/dpurkays/anime-matchmaker) 
 
 ### Problem Space
 
