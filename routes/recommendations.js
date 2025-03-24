@@ -5,6 +5,6 @@ const router = express.Router();
 
 router.get("/mal", recommendationController.getAnimeRecsByMALUser);
 router.get("/tv", recommendationController.getAnimeByTVShow);
-router.get("/anime-mood", recommendationController.getAnimeByMood);
+router.get("/mood/:genreIds", recommendationController.getAnimeByMood);
 router.get("/clear-cache", recommendationController.clearCache);
 export default router;

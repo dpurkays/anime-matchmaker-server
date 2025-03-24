@@ -44,7 +44,11 @@ const getAnimeRecsByMALUser = async (req, res) => {
 
 const getAnimeByMood = async (req, res) => {
   try {
-    const jikan_genre_ids = req.query.jikan_genre_ids?.split(",") || [];
+    const genreParam = req.params.genreIds;
+    console.log(genreParam)
+    const jikan_genre_ids = genreParam?.split(",").filter(Boolean);
+
+    if(!jikan_genre_ids || jikan_genre_ids.length === 0) return res.status(400).json({error: "Genre IDs are required in the query."});
     const jikanResponse = await axios.get(
       `${jikanUrl}anime?genres=${jikan_genre_ids.join(",")}&order_by=popularity`
     );

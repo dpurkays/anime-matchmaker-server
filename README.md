@@ -19,138 +19,73 @@ Finding the right anime can be overwhelming due to the large volume of anime. Wh
 - **Mood-Based Anime Search:** Users select a mood (e.g. "Chill & Relaxing", "High-Energy Action Packed") to get anime suggestions.
 - **AI powered recommendations:** Uses Gemini AI to analyse a user's watch list history and suggest relevant anime suggestions.
 - **Movie/TV show-based recommendations:** New users can enter a favorite Movie or TV show, and the app suggests similar anime.
-- **Users Watch List & History:** Tracks what the users have watched or what they plan on watching
 
 ## Implementation
 
 ### Tech Stack
 
 - React
+- Sass
 - Node
-- MySQL
 - Client Libraries:
   - react
   - react-router
+  - react-spinners
+  - react-scroll
   - axios
-  - Material UI
 - Server Libraries:
-  - knex
   - express
-  - bcrypt
   - dotenv
-  - uuid
+  - axios
+  - node-cache
+  - bottleneck
 
 ### APIs
 
 - Gemini API - https://ai.google.dev/api?lang=node
 - Jikan API - https://docs.api.jikan.moe/
+  - unofficial api for MyAnimeList (MAL)
 
 ### Sitemap
 
-- **Home Page:** Entry point with options to search anime by mood, AI input
-  - **Mood Based Search:** Users selects a mood and AI generated recommendations appears
-  - **AI powered Search:** Users enter a desscription
-- **Anime Details Page:** Displays anime metadata such as Title, genre, synopsis,
-- **User Profile:** shows users watch history and watch list
+- **Home Page:** Entry point with options to search anime by mood, based on TV show/movie, based on user's watch history or season's hottest.
+  - Recommendations Selection
+    - **Mood Based Search:** Users selects a mood and genre to get anime recommendations
+      - **Anime Details Page**
+    - **Based TV series or Movie:** User inputs a TV show or movie to get similar animes.
+      - **Anime Details Page**
+    - **Based on MAL user:** User gets recommendations based on their MAL's favorites or watch history.
+      - **Anime Details Page**
+    - **Season's Hottest Anime:** User gets the most popular anime from the current season.
+      - **Anime Details Page**
+- **Anime Details Page:** Displays anime metadata such as title, genre, synopsis, trailer and other metadata.
+- **Not Found Page:** For non existing pages.
 
 ### Data
 
-| Table Name    | Columns                           |
-| ------------- | --------------------------------- |
-| users         | id, email, password, created_at   |
-| anime         | id, title, genre, synopsis, image |
-| watch_history | id, user_id (fk), anime_id (fk)   |
-| watch_list    | id, user_id (fk), anime_id (fk)   |
+**data/moods.json**
+
+- stores general moods and genres.
+
+```
+[
+  {
+    "id": 1,
+    "name": "Chill & Relaxed",
+    "color": "#4fc3f7",
+    "emoji": "🌴",
+    "description": "Calm and peaceful anime that bring a sense of relaxation.",
+    "genres": [
+      { "id": 1, "name": "Slice of Life", "description": "Everyday life stories with a calming pace.", "jikan_genre_ids": [36] },
+      { "id": 2, "name": "Romance", "description": "Sweet love stories filled with warmth.", "jikan_genre_ids": [22, 74] },
+      { "id": 3, "name": "Iyashikei", "description": "Soothing, healing anime that bring comfort.", "jikan_genre_ids": [63] }
+    ]
+  },
+  ...
+]
+```
 
 ### Endpoints
-
-**GET :id/watch-list**
-
-- Gets users' watch list
-
-example request: `GET /1/watch-list`
-
-- response 404 if user id is not found
-- response 200 if successful
-
-example response:
-
-```
-[
-    {
-      "anime_id": e3a45678-12d3-4f56-b789-0a12b3c4d5e6,
-      "title": "One Punch Man",
-      "image_url": "https://cdn.myanimelist.net/images/anime/12/76049.jpg"
-    },
-    {
-      "anime_id": 9f1c2b34-5678-4abc-def0-123456789abc,
-      "title": "Naruto",
-      "image_url": "https://cdn.myanimelist.net/images/anime/1141/142503.jpg"
-    }
-]
-```
-
-**GET :id/watch-history**
-
-- Gets users' watch history
-
-example request: `GET /1/watch-history`
-
-- response 404 if user id is not found
-- response 200 if successful
-
-example response:
-
-```
-[
-    {
-      "anime_id": a12b3c4d-5e6f-7g89-0123-4h5i6789j0kl,
-      "title": "Shinseiki Evangelion",
-      "image_url": "https://cdn.myanimelist.net/images/anime/1314/108941.jpg"
-    },
-    {
-      "anime_id": 5d4c3b2a-1e0f-9876-5432-1a2b3c4d5e6f,
-      "title": "Cowboy Bebop",
-      "image_url": "https://cdn.myanimelist.net/images/anime/4/19644.jpg"
-    }
-]
-```
-
-**POST :id/watch-list**
-
-- add anime to watch list
-  - list that the user would like to watch
-
-example request: `POST /1/watch-list`
-
-- response 400 if unsuccessful
-- response 201 if successful
-
-```
-{
-    "anime_id": 789abc12-34de-567f-8901-23456789abcd,
-    "title": "Witch Hunter Robin",
-    "image_url": "https://cdn.myanimelist.net/images/anime/10/19969.jpg"
-}
-```
-
-**POST :id/watch-history**
-
-- add anime to watch history
-  - list where users already watched the anime
-
-example request: `POST /1/watch-history`
-
-- response 400 if unsuccessful
-- response 201 if successful
-
-```
-{
-    "anime_id": b7c9d2e4-1f34-4a67-9b80-2c5d6e7f8a91,
-    "title": "Jing: King of Bandits - Seventh Heaven",
-    "image_url": "https://cdn.myanimelist.net/images/anime/1325/94741.jpg"
-}
-```
 
 ## Roadmap
 
