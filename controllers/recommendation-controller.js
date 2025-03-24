@@ -19,7 +19,7 @@ const getAnimeRecsByMALUser = async (req, res) => {
   });
 
   try{
-    const malUsername = req.query.malUsername;
+    const malUsername = req.params.username;
 
     const cachedData = cache.get(malUsername);
     if (cachedData) return res.status(200).json(cachedData);

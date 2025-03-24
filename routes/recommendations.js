@@ -3,7 +3,7 @@ import * as recommendationController from "../controllers/recommendation-control
 
 const router = express.Router();
 
-router.get("/mal", recommendationController.getAnimeRecsByMALUser);
+router.get("/mal/:username", recommendationController.getAnimeRecsByMALUser);
 router.get("/tv", recommendationController.getAnimeByTVShow);
 router.get("/mood/:genreIds", recommendationController.getAnimeByMood);
 router.get("/clear-cache", recommendationController.clearCache);

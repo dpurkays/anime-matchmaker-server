@@ -91,7 +91,7 @@ Finding the right anime can be overwhelming due to the large volume of anime. Wh
 
 ### Week 1
 
-- Setup backend infrastructure (Node, Express, MySQL)
+- Setup backend infrastructure (Node, Express)
 - Research and intergrate APIs
 - Implement core API endpoints
 - Implement the basic UI structures
@@ -102,7 +102,6 @@ Finding the right anime can be overwhelming due to the large volume of anime. Wh
 ### Week 2
 
 - Anime Details Page
-- User Profile page
 - Implement AI powered reecommentation using Gemini API
 - Final testing and bug fixes
 
@@ -110,4 +109,5 @@ Finding the right anime can be overwhelming due to the large volume of anime. Wh
 
 - Manga Recommendations
   - extend the app to suggest mangas
-- JWT login
+- Experiment with AniList API for more generous rate limits
+- Use Official MyAnimeList API so users can bookmark animes to their watch list directly from Anime Matchmaker
