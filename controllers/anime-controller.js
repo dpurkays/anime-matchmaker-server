@@ -10,7 +10,7 @@ const getSeasonHottest = async (req, res) => {
 
         const extracted = jikanResponse.data.data.map((anime) => ({
             mal_id: anime.mal_id,
-            image: anime.images.jpg.large_image_url, //|| anime.images.jpg.image_url,
+            image: anime.images.jpg.large_image_url,
             rating: formatRating(anime.rating),
             title_english: anime.title_english || anime.title,
             year: anime.year || "",

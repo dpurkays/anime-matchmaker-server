@@ -42,29 +42,6 @@ const getAnimeRecsByMALUser = async (req, res) => {
   }
 }
 
-// const fetchMALanimeList = async (username) => {
-//   try{
-//     if (!username) {
-//       console.error("MAL username is required");
-//       return null;
-//     } 
-
-//     let animeList = await fetchFavorites(username);
-
-//     if (animeList.length === 0) {
-//       console.log("No favorites....looking at watch history");
-//       animeList = await fetchWatchHistory(username);
-//     }
-   
-//     return animeList;
-
-//   } catch(error) {
-//     console.error(error);
-//     throw new Error("Failed to fetch MAL animes");
-    
-//   }
-// }
-
 const getAnimeByMood = async (req, res) => {
   try {
     const jikan_genre_ids = req.query.jikan_genre_ids?.split(",") || [];
