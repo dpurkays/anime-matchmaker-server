@@ -104,7 +104,7 @@ const fetchAnimeFromJikanByName = async (title, retryCount = 0) => {
       image: anime.images.jpg.image_url,
       rating: formatRating(anime.rating),
       title_english: anime.title_english || anime.title,
-      year: anime.year ||  "",
+      year: anime.year ||  anime.aired?.prop?.from?.year || "N/A",
     };
     cache.set(title, extractedAnime);
     return extractedAnime;

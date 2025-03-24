@@ -47,7 +47,7 @@ const getAnime = async (req, res) => {
             status: formatAiringStatus(anime.status),
             studio: anime.studios[0].name,
             rating: anime.rating,
-            year: anime.year || "",
+            year: anime.year ||  anime.aired?.prop?.from?.year || "N/A",
             aired: anime.aired.string,
             youtube_id: anime.trailer.youtube_id
         }

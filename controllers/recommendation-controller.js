@@ -62,7 +62,7 @@ const getAnimeByMood = async (req, res) => {
         image: anime.images.jpg.image_url,
         rating: formatRating(anime.rating),
         title_english: anime.title_english || anime.title,
-        year: anime.year || "",
+        year: anime.year || anime.aired?.prop?.from?.year || "N/A",
     }));
 
     res.status(200).json(extractedAnime);
