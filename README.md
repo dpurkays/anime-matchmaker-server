@@ -1,6 +1,7 @@
 # Anime Matchmaker 💖
 
-A personalized anime recommender connecting you to shows you'll love through tailored suggestions.
+A personalized anime recommender connecting you to shows you'll love through tailored suggestions.\
+Check out the application here: https://animematchmaker.netlify.app/ 
 
 ## Overview
 
