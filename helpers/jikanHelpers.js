@@ -157,7 +157,6 @@ const fetchFavorites = async (username, retryCount = 0) => {
     if (response.data?.data?.length > 0) {
       return response.data.data.anime.map((anime) => anime.title).filter(Boolean);
     }
-    return [];
   } catch (error) {
     if(error.response?.status === 404) {
       console.error(`user ${username} not found.`);
@@ -174,8 +173,7 @@ const fetchFavorites = async (username, retryCount = 0) => {
       }
     }
   }
-  console.error(`Unexpected error fetching favorites:`, error.message);
-  throw error;
+  return [];
 }
 
 const fetchWatchHistory = async (username, retryCount = 0) => {
