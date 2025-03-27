@@ -25,13 +25,19 @@ const getAnimeRecsByMALUser = async (req, res) => {
     if (cachedData) return res.status(200).json(cachedData);
 
     const malAnimeList = await fetchMALAnimeList(malUsername);
+    if (requestAborted) return;
+    
     if(malAnimeList === null) return res.status(404).json({error: "MAL user not found"});
     if (malAnimeList.length === 0) return res.status(404).json({ error: "No anime found in user favorites or watch history." });
 
     const animeListString = malAnimeList.join(", ");
     const geminiRecommendations = await fetchAnimeRecommendationsFromGemini("mal", animeListString);
     await delay(2000);
+    if (requestAborted) return;
+
     const animeRecommendations = await fetchAllAnimes(geminiRecommendations.recommendations, () => requestAborted);
+    if (requestAborted) return;
+
     if(animeRecommendations.length > 0) {
         cache.set(malUsername, animeRecommendations);
     }
