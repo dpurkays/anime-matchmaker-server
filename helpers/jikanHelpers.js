@@ -4,7 +4,7 @@ import NodeCache from "node-cache";
 import { formatRating, JIKAN_URL } from "../utils/animeUtils.js";
 
 
-const cache = new NodeCache({ stdTTL: 2 * 60 * 60}); // cached for 2 hours
+const cache = new NodeCache({ stdTTL: 4 * 60 * 60}); // cached for 4 hours
 const jikanUrl = JIKAN_URL;
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 

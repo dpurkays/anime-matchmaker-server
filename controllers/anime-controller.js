@@ -1,9 +1,10 @@
 import axios from "axios";
 import "dotenv/config";
+import NodeCache from "node-cache";
 import { formatAiringStatus, formatDuration, formatRating, JIKAN_URL } from "../utils/animeUtils.js";
 
 const jikanUrl = JIKAN_URL;
-
+const cache = new NodeCache({ stdTTL: 4 * 60 * 60});
 const getSeasonHottest = async (req, res) => {
     try {
         const jikanResponse = await axios.get(`${jikanUrl}seasons/now?limit=20`);
@@ -26,6 +27,12 @@ const getSeasonHottest = async (req, res) => {
 const getAnime = async (req, res) => {
     try {
         const {animeId} = req.params;
+
+         const cachedAnime = cache.get(animeId);
+        if (cachedAnime) {
+            return res.status(200).json(cachedAnime);
+        }
+
         const jikanResponse = await axios.get(`${jikanUrl}anime/${animeId}/full`);
         if (!jikanResponse.data.data || jikanResponse.data.data.length === 0) {
             return res.status(404).json({ error: `No anime with id ${animeId}` });
@@ -51,6 +58,9 @@ const getAnime = async (req, res) => {
             aired: anime.aired.string,
             youtube_id: anime.trailer.youtube_id
         }
+
+        cache.set(animeId, extractedAnime);
+
         res.status(200).json(extractedAnime);
 
     } catch(error) {
