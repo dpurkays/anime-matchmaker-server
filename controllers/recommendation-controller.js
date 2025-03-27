@@ -37,7 +37,7 @@ const getAnimeRecsByMALUser = async (req, res) => {
     }
     res.status(200).json(animeRecommendations.filter(Boolean));
   } catch(error) {
-    console.error(error);
+    console.error("getAnimeRecsByMALUser: ", error.message);
     res.status(500).json({ error: "Failed to fetch anime recommendations" });
   }
 }
@@ -67,7 +67,7 @@ const getAnimeByMood = async (req, res) => {
     res.status(200).json(extractedAnime);
 
   } catch (error) {
-    console.error(error);
+    console.error("getAnimeByMood: ", error.message);
     res.status(500).json({ error: "Failed to fetch animes" });
   }
 };
@@ -100,7 +100,7 @@ const getAnimeByTVShow = async (req, res) => {
 
     res.status(200).json(animeRecommendations.filter(Boolean));
   } catch (error) {
-    console.error(error);
+    console.error("getAnimeByTVShow: ", error.message);
     res.status(500).json({ error: "Failed to fetch anime recommendations" });
   }
 };

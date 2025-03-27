@@ -57,7 +57,7 @@ const fetchAllAnimes = async (geminiRecommendations, isCancelledFn) => {
         } catch (error) {
           console.error(
             `Error fetching anime with title: ${title}`,
-            error
+            error.message
           );
           return null;
         }
@@ -75,7 +75,7 @@ const fetchAllAnimes = async (geminiRecommendations, isCancelledFn) => {
     return uniqueResponses;
 
   } catch (error) {
-    console.error(error);
+    console.error(error.message);
     return [];
   }
 };
@@ -145,9 +145,8 @@ const fetchMALAnimeList = async (username) => {
     return animeList;
 
   } catch(error) {
-    console.error(error);
-    throw new Error("Failed to fetch MAL animes");
-    
+    console.error(`fetchMALAnimeList:`, error.message);
+    throw new Error("Failed to fetch MAL animes");    
   }
 }
 

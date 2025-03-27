@@ -10,7 +10,7 @@ const fetchAnimeRecommendationsFromGemini = async (type, input) => {
     const result = await model.generateContent(prompt);
     return parseAIresponse(result);
   } catch (error) {
-    console.error("Error fetching recommendations from Gemini API: ", error);
+    console.error("Error fetching recommendations from Gemini API: ", error.message);
     return { recommendations: [] };
   }
 };

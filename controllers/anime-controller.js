@@ -19,7 +19,7 @@ const getSeasonHottest = async (req, res) => {
         res.status(200).json(extracted);
         
     } catch(error) {
-        console.error(error);
+        console.error("getSeasonHottest:", error.message);
         res.status(500).json({ error: "Error fetching hottest season animes" });
     }
 }
@@ -52,7 +52,7 @@ const getAnime = async (req, res) => {
             genres: anime.genres,
             themes: anime.themes,
             status: formatAiringStatus(anime.status),
-            studio: anime.studios[0].name,
+            studio: anime?.studios[0]?.name || "Unknown",
             rating: anime.rating,
             year: anime.year ||  anime.aired?.prop?.from?.year || "N/A",
             aired: anime.aired.string,
@@ -64,7 +64,7 @@ const getAnime = async (req, res) => {
         res.status(200).json(extractedAnime);
 
     } catch(error) {
-        console.error(error);
+        console.error("getAnime:", error.message);
         res.status(500).json({ error: "Failed to fetch anime details" });
     }
 }
