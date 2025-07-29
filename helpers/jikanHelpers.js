@@ -153,7 +153,8 @@ const fetchMALAnimeList = async (username) => {
 const fetchFavorites = async (username, retryCount = 0) => {
   try {
     const response = await axios.get(`${jikanUrl}users/${username}/favorites`); 
-    if (response.data?.data?.length > 0) {
+    if (response.data?.data?.anime?.length > 0) {
+      console.log(response.data.data.anime.map((anime) => anime.title).filter(Boolean));
       return response.data.data.anime.map((anime) => anime.title).filter(Boolean);
     }
   } catch (error) {
