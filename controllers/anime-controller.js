@@ -19,11 +19,14 @@ const getSeasonHottest = async (req, res) => {
     for (const anime of jikanResponse.data.data) {
       if (!seen.has(anime.mal_id)) {
         seen.add(anime.mal_id);
+
         extracted.push({
           mal_id: anime.mal_id,
           image: anime.images.jpg.large_image_url,
           rating: formatRating(anime.rating),
           title_english: anime.title_english || anime.title,
+          synopsis: anime.synopsis,
+          genres: anime.genres.map((genre) => genre.name),
           year: anime.year || "",
         });
       }
