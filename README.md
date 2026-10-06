@@ -3,6 +3,10 @@
 A personalized anime recommender connecting you to shows you'll love through tailored suggestions.\
 Check out the application here: https://animematchmaker.netlify.app/
 
+## 🚧 Under construction
+
+The public Jikan REST API used to fetch anime metadata was permanently discontinued on October 1, 2026. As a result, network requests currently fail. I am actively evaluating alternative providers to restore full application functionality.
+
 ## Overview
 
 Anime Matchmaker is a web application that helps users discover new anime based on their mood, watch history, and personal preferences. The app suggests anime titles tailored to each user's taste by leveraging AI-powered recommendations.
