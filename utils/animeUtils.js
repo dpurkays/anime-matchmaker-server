@@ -1,19 +1,19 @@
 const formatRating = (rating) => {
-    if(!rating) return "N/A";
-    if (rating.startsWith("R - 17")) return "17+";
-    if(rating.startsWith("R+") || rating.startsWith("Rx")) return "18+";
-    return rating.split(" ")[0];
-} 
+  if (!rating) return "N/A";
+  if (rating.startsWith("R - 17")) return "17+";
+  if (rating.startsWith("R+") || rating.startsWith("Rx")) return "18+";
+  return rating.split(" ")[0];
+};
 
 const formatAiringStatus = (status) => {
-    if (status === "Finished Airing") return "Completed";
-    return status;
-}
+  if (status === "Finished Airing") return "Completed";
+  return status;
+};
 
 const formatDuration = (duration) => {
-    return duration.split(" ").splice(0,2).join(" ");
-}
+  return duration.split(" ").splice(0, 2).join(" ");
+};
 
-const JIKAN_URL = "https://api.jikan.moe/v4/";
+const ANIME_API_URL = "https://api.tenrai.org/v1/";
 
-export { formatAiringStatus, formatDuration, formatRating, JIKAN_URL };
+export { ANIME_API_URL, formatAiringStatus, formatDuration, formatRating };
