@@ -2,21 +2,21 @@ import axios from "axios";
 import "dotenv/config";
 import NodeCache from "node-cache";
 import {
+  ANIME_API_URL,
   formatAiringStatus,
   formatDuration,
   formatRating,
-  JIKAN_URL,
 } from "../utils/animeUtils.js";
 
-const jikanUrl = JIKAN_URL;
+const animeApiUrl = ANIME_API_URL;
 const cache = new NodeCache({ stdTTL: 4 * 60 * 60 });
 const getSeasonHottest = async (req, res) => {
   try {
-    const jikanResponse = await axios.get(`${jikanUrl}seasons/now?limit=20`);
+    const animeResponse = await axios.get(`${animeApiUrl}seasons/now?limit=20`);
     const seen = new Set();
     const extracted = [];
 
-    for (const anime of jikanResponse.data.data) {
+    for (const anime of animeResponse.data.data) {
       if (!seen.has(anime.mal_id)) {
         seen.add(anime.mal_id);
 
@@ -48,11 +48,13 @@ const getAnime = async (req, res) => {
       return res.status(200).json(cachedAnime);
     }
 
-    const jikanResponse = await axios.get(`${jikanUrl}anime/${animeId}/full`);
-    if (!jikanResponse.data.data || jikanResponse.data.data.length === 0) {
+    const animeResponse = await axios.get(
+      `${animeApiUrl}anime/${animeId}/full`,
+    );
+    if (!animeResponse.data.data || animeResponse.data.data.length === 0) {
       return res.status(404).json({ error: `No anime with id ${animeId}` });
     }
-    const anime = jikanResponse.data.data;
+    const anime = animeResponse.data.data;
     const extractedAnime = {
       mal_id: anime.mal_id,
       image: anime.images.jpg.image_url,

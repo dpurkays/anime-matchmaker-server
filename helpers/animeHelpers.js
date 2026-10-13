@@ -1,86 +1,88 @@
 import axios from "axios";
 import Bottleneck from "bottleneck";
 import NodeCache from "node-cache";
-import { formatRating, JIKAN_URL } from "../utils/animeUtils.js";
+import { ANIME_API_URL, formatRating } from "../utils/animeUtils.js";
 
-
-const cache = new NodeCache({ stdTTL: 2 * 60 * 60}); // cached for 2 hours
-const jikanUrl = JIKAN_URL;
+const cache = new NodeCache({ stdTTL: 2 * 60 * 60 }); // cached for 2 hours
+const animeApiUrl = ANIME_API_URL;
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const limiter = new Bottleneck({
-  maxConcurrent: 3,            // allows 3 requests at once
-  minTime: 334,                // ~3 per second (1000ms / 3 ≈ 333.33)
-  reservoir: 60,               // Total of 60 requests per minute
-  reservoirRefreshAmount: 60,  // Refill back to 60
+  maxConcurrent: 3, // allows 3 requests at once
+  minTime: 334, // ~3 per second (1000ms / 3 ≈ 333.33)
+  reservoir: 60, // Total of 60 requests per minute
+  reservoirRefreshAmount: 60, // Refill back to 60
   reservoirRefreshInterval: 60 * 1000, // Every 60 seconds
 });
 
 const fetchAllAnimes = async (geminiRecommendations, isCancelledFn) => {
   try {
-
     const animeTitles = geminiRecommendations.map((anime) => anime.title);
     const cachedResults = [];
     const toFetch = [];
 
     animeTitles.forEach((title) => {
       const cachedAnime = cache.get(title);
-      if(cachedAnime !== undefined) {
-         const matchingRecommendation = geminiRecommendations.find(a => a.title === title);
-         if(matchingRecommendation) {
-            cachedResults.push({ 
-              ...cachedAnime, 
-              similarity_reason: matchingRecommendation.similarity_reason });
-         }
+      if (cachedAnime !== undefined) {
+        const matchingRecommendation = geminiRecommendations.find(
+          (a) => a.title === title,
+        );
+        if (matchingRecommendation) {
+          cachedResults.push({
+            ...cachedAnime,
+            similarity_reason: matchingRecommendation.similarity_reason,
+          });
+        }
       } else {
         toFetch.push(title);
       }
-    })
+    });
 
     if (toFetch.length === 0 || isCancelledFn()) return cachedResults;
 
     const fetchedAnimes = [];
 
-    for(const title of toFetch) {
+    for (const title of toFetch) {
       if (isCancelledFn()) break;
-      
-        try {
-          const animeData = await fetchAnimeFromJikanByName(title);
-          if(animeData) {
-            cache.set(title, animeData);
-            const matching = geminiRecommendations.find(a => a.title === title);
-            fetchedAnimes.push({
-              ...animeData,
-              similarity_reason: matching?.similarity_reason || null,
-            });
-          }
-        } catch (error) {
-          console.error(
-            `Error fetching anime with title: ${title}`,
-            error.message
-          );
-          return null;
+
+      try {
+        const animeData = await fetchAnimeFromApiByName(title);
+        if (animeData) {
+          cache.set(title, animeData);
+          const matching = geminiRecommendations.find((a) => a.title === title);
+          fetchedAnimes.push({
+            ...animeData,
+            similarity_reason: matching?.similarity_reason || null,
+          });
         }
+      } catch (error) {
+        console.error(
+          `Error fetching anime with title: ${title}`,
+          error.message,
+        );
+        return null;
       }
+    }
 
     const successfulResponses = [
       ...cachedResults,
-      ...fetchedAnimes.filter(Boolean)
+      ...fetchedAnimes.filter(Boolean),
     ];
 
     const uniqueResponses = Array.from(
-      new Map(successfulResponses.map((anime) => [anime.mal_id, anime])).values()
+      new Map(
+        successfulResponses.map((anime) => [anime.mal_id, anime]),
+      ).values(),
     );
 
     return uniqueResponses;
-
   } catch (error) {
     console.error(error.message);
     return [];
   }
 };
 
-const fetchAnimeFromJikanByName = async (title, retryCount = 0) => {
+const fetchAnimeFromApiByName = async (title, retryCount = 0) => {
   try {
     const cachedAnime = cache.get(title);
     if (cachedAnime !== undefined) {
@@ -88,9 +90,8 @@ const fetchAnimeFromJikanByName = async (title, retryCount = 0) => {
     }
 
     const animeResponse = await limiter.schedule(() =>
-      axios.get(`${jikanUrl}anime/?q=${title}`)
+      axios.get(`${animeApiUrl}anime/?q=${title}`),
     );
-
 
     if (!animeResponse.data.data || animeResponse.data.data.length === 0) {
       console.error(`No results found for: ${title}`);
@@ -104,21 +105,20 @@ const fetchAnimeFromJikanByName = async (title, retryCount = 0) => {
       image: anime.images.jpg.image_url,
       rating: formatRating(anime.rating),
       title_english: anime.title_english || anime.title,
-      year: anime.year ||  anime.aired?.prop?.from?.year || "N/A",
+      year: anime.year || anime.aired?.prop?.from?.year || "N/A",
     };
     cache.set(title, extractedAnime);
     return extractedAnime;
-
   } catch (error) {
     if (error.response && error.response.status === 429) {
       console.error(`Rate limit exceeded for: ${title}. Retrying in 3s...`);
-      if(retryCount < 3) {
+      if (retryCount < 3) {
         await delay(3000);
-        return fetchAnimeFromJikanByName(title, retryCount + 1);
+        return fetchAnimeFromApiByName(title, retryCount + 1);
       } else {
         console.error(`Failed after 3 retries: ${title}`);
         cache.set(title, null);
-        return null
+        return null;
       }
     } else {
       console.error(`Error fetching anime: ${title}`, error.message);
@@ -128,37 +128,41 @@ const fetchAnimeFromJikanByName = async (title, retryCount = 0) => {
   }
 };
 
-
 const fetchMALAnimeList = async (username) => {
-  try{
+  try {
     if (!username) {
       console.error("MAL username is required");
       return null;
-    } 
+    }
 
     let animeList = await fetchFavorites(username);
-    if(animeList === null) return null;
+    if (animeList === null) return null;
     if (animeList.length === 0) {
       animeList = await fetchWatchHistory(username);
     }
-   
-    return animeList;
 
-  } catch(error) {
+    return animeList;
+  } catch (error) {
     console.error(`fetchMALAnimeList:`, error.message);
-    throw new Error("Failed to fetch MAL animes");    
+    throw new Error("Failed to fetch MAL animes");
   }
-}
+};
 
 const fetchFavorites = async (username, retryCount = 0) => {
   try {
-    const response = await axios.get(`${jikanUrl}users/${username}/favorites`); 
+    const response = await axios.get(
+      `${animeApiUrl}users/${username}/favorites`,
+    );
     if (response.data?.data?.anime?.length > 0) {
-      console.log(response.data.data.anime.map((anime) => anime.title).filter(Boolean));
-      return response.data.data.anime.map((anime) => anime.title).filter(Boolean);
+      console.log(
+        response.data.data.anime.map((anime) => anime.title).filter(Boolean),
+      );
+      return response.data.data.anime
+        .map((anime) => anime.title)
+        .filter(Boolean);
     }
   } catch (error) {
-    if(error.response?.status === 404) {
+    if (error.response?.status === 404) {
       console.error(`user ${username} not found.`);
       return null;
     }
@@ -174,13 +178,18 @@ const fetchFavorites = async (username, retryCount = 0) => {
     }
   }
   return [];
-}
+};
 
 const fetchWatchHistory = async (username, retryCount = 0) => {
   try {
     await delay(3000);
-    const response = await axios.get(`${jikanUrl}users/${username}/history?type=anime`);
-    return response.data?.data?.map((anime) => anime.entry.name).filter(Boolean) || [];
+    const response = await axios.get(
+      `${animeApiUrl}users/${username}/history?type=anime`,
+    );
+    return (
+      response.data?.data?.map((anime) => anime.entry.name).filter(Boolean) ||
+      []
+    );
   } catch (error) {
     if (error.response && error.response.status === 429) {
       console.error(`Rate limit exceeded for watch history. Retrying in 3s...`);
@@ -195,5 +204,11 @@ const fetchWatchHistory = async (username, retryCount = 0) => {
   }
 };
 
-export { cache, fetchAllAnimes, fetchAnimeFromJikanByName, fetchFavorites, fetchMALAnimeList, fetchWatchHistory };
-
+export {
+  cache,
+  fetchAllAnimes,
+  fetchAnimeFromApiByName,
+  fetchFavorites,
+  fetchMALAnimeList,
+  fetchWatchHistory,
+};
